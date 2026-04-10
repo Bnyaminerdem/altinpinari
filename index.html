@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Altın Pınarı Kuyumculuk - Güncel altın fiyatları, ziynet altınları, gram altın ve döviz kurları. Canlı kuyumcu panosu.">
+  <meta name="keywords" content="altın fiyatları, kuyumcu, çeyrek altın, gram altın, yarım altın, teklik altın, altın pınarı">
+  <meta name="author" content="Altın Pınarı Kuyumculuk">
+  <meta property="og:title" content="Altın Pınarı Kuyumculuk | Güncel Altın Fiyatları">
+  <meta property="og:description" content="Canlı altın fiyatları - Ziynet, Gram ve Ayar altın fiyatlarını anlık takip edin.">
+  <meta property="og:type" content="website">
+  <title>Altın Pınarı Kuyumculuk | Güncel Altın Fiyatları</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div class="loading-overlay" id="loading-overlay">
+    <img src="logo.png" alt="Logo" class="loading-logo">
+    <div class="loading-text">ALTIN PINARI</div>
+    <div class="loading-bar"></div>
+  </div>
+
+  <!-- Ticker Bar -->
+  <div class="ticker-bar">
+    <div class="ticker-content" id="ticker-content">
+      <span class="ticker-item"><span class="label">Fiyatlar yükleniyor...</span></span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <div class="header-brand">
+          <img src="logo.png" alt="Altın Pınarı Logo" class="header-logo" id="header-logo">
+          <div>
+            <h1 class="header-title">Altın Pınarı</h1>
+            <div class="header-subtitle">Kuyumculuk</div>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="live-clock" id="live-clock">--:--:--</div>
+          <div class="live-date" id="live-date">Yükleniyor...</div>
+          <div class="update-badge">
+            <span class="update-dot"></span>
+            <span id="update-time">Güncelleniyor...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Error Banner -->
+    <div class="error-banner" id="error-banner">
+      ⚠️ <span id="error-message">Bir hata oluştu</span>
+    </div>
+
+    <!-- Popüler Altınlar -->
+    <section class="section section-popular" id="section-popular">
+      <div class="section-header">
+        <span class="section-icon">⭐</span>
+        <h2 class="section-title">Popüler Altınlar</h2>
+        <span class="section-badge popular-badge" id="popular-badge">En Çok Aranan</span>
+      </div>
+      <div class="price-table-wrapper">
+        <table class="price-table" id="popular-table">
+          <thead>
+            <tr>
+              <th>Ürün</th>
+              <th>Alış (₺)</th>
+              <th>Satış (₺)</th>
+            </tr>
+          </thead>
+          <tbody id="popular-table-body">
+            <!-- JS ile doldurulacak -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Ziynet Altınları -->
+    <section class="section" id="section-ziynet">
+      <div class="section-header">
+        <span class="section-icon">💎</span>
+        <h2 class="section-title">Ziynet Altınları</h2>
+        <span class="section-badge" id="ziynet-badge">Yükleniyor</span>
+      </div>
+      <div class="price-table-wrapper">
+        <table class="price-table" id="ziynet-table">
+          <thead>
+            <tr>
+              <th>Ürün</th>
+              <th>Alış (₺)</th>
+              <th>Satış (₺)</th>
+            </tr>
+          </thead>
+          <tbody id="ziynet-table-body">
+            <!-- JS ile doldurulacak -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Gram & Ayar Altınları -->
+    <section class="section" id="section-gram">
+      <div class="section-header">
+        <span class="section-icon">⚖️</span>
+        <h2 class="section-title">Gram & Ayar Altınları</h2>
+        <span class="section-badge" id="gram-badge">Yükleniyor</span>
+      </div>
+      <div class="price-table-wrapper">
+        <table class="price-table" id="gram-table">
+          <thead>
+            <tr>
+              <th>Ürün</th>
+              <th>Alış (₺)</th>
+              <th>Satış (₺)</th>
+            </tr>
+          </thead>
+          <tbody id="gram-table-body">
+            <!-- JS ile doldurulacak -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Borsa & Dünya -->
+    <section class="section" id="section-borsa">
+      <div class="section-header">
+        <span class="section-icon">🌐</span>
+        <h2 class="section-title">Borsa & Dünya</h2>
+        <span class="section-badge" id="borsa-badge">Yükleniyor</span>
+      </div>
+      <div class="price-table-wrapper">
+        <table class="price-table" id="borsa-table">
+          <thead>
+            <tr>
+              <th>Ürün</th>
+              <th>Alış (₺)</th>
+              <th>Satış (₺)</th>
+            </tr>
+          </thead>
+          <tbody id="borsa-table-body">
+            <!-- JS ile doldurulacak -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-brand">✦ Altın Pınarı Kuyumculuk ✦</div>
+      <div class="footer-contact">
+        <span class="footer-contact-item">
+          <span class="icon">📍</span>
+          <span>Bağlarbaşı, Kızlarpınarı Cd., 06300 Keçiören/Ankara</span>
+        </span>
+        <span class="footer-contact-item">
+          <span class="icon">📞</span>
+          <span>(0312) 359 49 59</span>
+        </span>
+        <span class="footer-contact-item">
+          <span class="icon">🕐</span>
+          <span>Çalışma saatleri eklenecek</span>
+        </span>
+      </div>
+      <div class="footer-divider"></div>
+
+      <!-- IBAN Kartı -->
+      <div class="iban-card">
+        <div class="iban-bank">
+          <span class="iban-bank-logo">🏦</span>
+          <span class="iban-bank-name">Kuveyt Türk</span>
+        </div>
+        <div class="iban-holder">Nevzat Arslan ve Ortağı</div>
+        <div class="iban-row">
+          <span class="iban-label">IBAN</span>
+          <span class="iban-number" id="iban-number">TR89 0020 5000 0993 9508 4000 01</span>
+          <button class="iban-copy-btn" id="iban-copy-btn" onclick="copyIban()" title="IBAN'ı Kopyala">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="iban-copy-text">Kopyala</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="footer-divider"></div>
+      <div class="footer-copyright">
+        © 2026 Altın Pınarı Kuyumculuk. Tüm hakları saklıdır.
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
