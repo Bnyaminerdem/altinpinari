@@ -26,13 +26,8 @@ const CONFIG = {
   // Diğer
   BORSA_CODES: ['XAUUSD', 'AG_T'],
 
-  // Yeni sarrafiye alışını ESKİ alışından + bonus ile göster
-  // (C'nin alışı = EC alışı + 100 TL)
-  YENI_ALIS_FROM: { 'C': 'EC', 'Y': 'EY', 'T': 'ET', 'G': 'EG' },
-  YENI_ALIS_BONUS: 100,
-
-  // Yeni çeyreğe (C) satış fiyatına ek 100 TL (arka planda)
-  YENI_SATIS_BONUS: { 'C': 100 },
+  // Özel alış düzeltmeleri (+ veya - TL)
+  ALIS_ADJUSTMENT: {  },
 
   // Özel alış düzeltmeleri (+ veya - TL)
   ALIS_ADJUSTMENT: {  },
@@ -180,11 +175,11 @@ function renderTable(tableBody, codes, isEskiSection) {
 
     // Alış hesapla
     let alisStr;
-    if (CONFIG.YENI_ALIS_FROM && CONFIG.YENI_ALIS_FROM[code]) {
-      // Yeni sarrafiye: eski alış + bonus
-      const eskiCode = CONFIG.YENI_ALIS_FROM[code];
-      const eskiPrice = parseTurkishNumber(dataMap[eskiCode]?.Alis || '0');
-      alisStr = eskiPrice === 0 ? '-' : formatTurkishNumber(eskiPrice + CONFIG.YENI_ALIS_BONUS);
+    const isSarrafiye = CONFIG.ZIYNET_CODES.includes(code) || CONFIG.ESKI_CODES.includes(code);
+
+    if (isSarrafiye) {
+      // Sarrafiye: Girdiği gibi (ham veri)
+      alisStr = formatAlis(item.Alis);
     } else if (code === 'B') {
       // 22 Ayar Bilezik Alış: Has Altın (HH_T) Alış * 0.912
       const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
@@ -198,12 +193,9 @@ function renderTable(tableBody, codes, isEskiSection) {
 
     // Satış hesapla
     let satisStr;
-    if (CONFIG.YENI_ALIS_FROM && CONFIG.YENI_ALIS_FROM[code]) {
-      // Yeni sarrafiye: satışı da eski koddan al
-      const eskiCode = CONFIG.YENI_ALIS_FROM[code];
-      const baseSatis = parseTurkishNumber(dataMap[eskiCode]?.Satis || item.Satis);
-      const extraBonus = (CONFIG.YENI_SATIS_BONUS && CONFIG.YENI_SATIS_BONUS[code]) || 0;
-      satisStr = baseSatis === 0 ? '-' : formatTurkishNumber(baseSatis + CONFIG.SATIS_MARKUP + extraBonus);
+    if (isSarrafiye) {
+      // Sarrafiye: Girdiği gibi (ham veri)
+      satisStr = formatAlis(item.Satis);
     } else if (code === 'B') {
       // 22 Ayar Bilezik: Has Altın (HH_T) Satış * 0.928
       const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || '0');
