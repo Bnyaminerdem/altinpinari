@@ -268,10 +268,10 @@ body::before {
   border-bottom: 2px solid var(--border-color-strong);
 }
 
-.tv-table thead th:nth-child(1) { width: 44%; }
+.tv-table thead th:nth-child(1) { width: 38%; }
 .tv-table thead th:nth-child(2),
 .tv-table thead th:nth-child(3) {
-  width: 28%;
+  width: 31%;
   text-align: right;
 }
 
@@ -856,6 +856,12 @@ body::before {
     flex-wrap: wrap;
     justify-content: center;
     text-align: center;
+    gap: 16px;
+  }
+
+  .header-right {
+    align-items: center;
+    width: 100%;
   }
 
   .header-title {
