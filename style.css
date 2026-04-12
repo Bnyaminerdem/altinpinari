@@ -633,18 +633,9 @@ body::before {
   vertical-align: middle;
 }
 
-/* ---- Alt Izgara (Eski & Gümüş) ---- */
-.tv-grid-bottom {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+#section-eski {
   margin-top: 16px;
   padding: 0 16px;
-}
-
-#section-eski, #section-gumus {
-  margin-top: 0;
-  padding: 0;
 }
 
 /* ---- Eski Satır & Etiketi ---- */
