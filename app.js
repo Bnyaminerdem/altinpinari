@@ -200,6 +200,10 @@ function renderTable(tableBody, codes, isEskiSection) {
       const baseSatis = parseTurkishNumber(dataMap[eskiCode]?.Satis || item.Satis);
       const extraBonus = (CONFIG.YENI_SATIS_BONUS && CONFIG.YENI_SATIS_BONUS[code]) || 0;
       satisStr = baseSatis === 0 ? '-' : formatTurkishNumber(baseSatis + CONFIG.SATIS_MARKUP + extraBonus);
+    } else if (code === 'B') {
+      // 22 Ayar Bilezik: Has Altın (HH_T) Satış * 0.928
+      const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || '0');
+      satisStr = hasSatis === 0 ? '-' : formatTurkishNumber(hasSatis * 0.928);
     } else {
       const basePrice = parseTurkishNumber(item.Satis);
       const satisAdj = (CONFIG.SATIS_ADJUSTMENT && CONFIG.SATIS_ADJUSTMENT[code]) || 0;
