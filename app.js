@@ -39,7 +39,7 @@ const CONFIG = {
 
   // Özel satış düzeltmeleri (markup üzerine ek, + veya - TL)
   // GA: API fiyatı + 20 (markup) + (-40) = API fiyatı - 20
-  SATIS_ADJUSTMENT: { 'GA': -40, 'GAT': -40, 'CH_T': -40, 'A_T': -40 },
+  SATIS_ADJUSTMENT: { 'GA': -40, 'GAT': -40, 'CH_T': -40, 'A_T': -40, 'HH_T': -20 },
 
   // Eski kodlar (ESKİ etiketi gösterilir, soluk renk)
   ESKI_SET: new Set(['EC', 'EY', 'ET', 'EG']),
