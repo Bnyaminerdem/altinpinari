@@ -38,7 +38,7 @@ const CONFIG = {
   // Özel satış düzeltmeleri (markup üzerine ek, + veya - TL)
   // GA: API fiyatı + 20 (markup) + (-40) = API fiyatı - 20
   SATIS_ADJUSTMENT: { 
-    'GA': -40, 'GAT': -40, 'CH_T': -40, 'A_T': -40, 
+    'GA': -40, 'GAT': -40, 'CH_T': -20, 'A_T': -40, 
     'HH_T': -20, 'XAUUSD': -20, 'AG_T': -20, 'XAGUSD': -20 
   },
 
@@ -223,6 +223,14 @@ function renderTable(tableBody, codes, isEskiSection) {
       // 22 Ayar Bilezik Alış: Has Altın (HH_T) Alış * 0.912
       const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
       alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.912);
+    } else if (code === '14') {
+      // 14 Ayar Altın Alış: Has Altın (HH_T) Alış * 0.550
+      const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
+      alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.550);
+    } else if (code === '18') {
+      // 18 Ayar Altın Alış: Has Altın (HH_T) Alış * 0.710
+      const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
+      alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.710);
     } else {
       // Normal (Gram vb): API alış + özel düzeltme
       const basePrice = apiAlis;
