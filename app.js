@@ -58,7 +58,7 @@ const CONFIG = {
     'HH_T': 'Has Altın',   'CH_T': 'Külçe Toptan',
     'A_T': 'Ata Toptan',   'B': '22 Ayar Bilezik',
     '18': '18 Ayar Altın', '14': '14 Ayar Altın',
-    'XAUUSD': 'ONS Altın', 'AG_T': 'Gümüş'
+    'XAUUSD': 'ONS', 'AG_T': 'Gümüş'
   }
 };
 
