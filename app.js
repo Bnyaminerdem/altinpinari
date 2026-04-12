@@ -35,7 +35,7 @@ const CONFIG = {
   YENI_SATIS_BONUS: { 'C': 100 },
 
   // Özel alış düzeltmeleri (+ veya - TL)
-  ALIS_ADJUSTMENT: { 'B': -20 },
+  ALIS_ADJUSTMENT: {  },
 
   // Özel satış düzeltmeleri (markup üzerine ek, + veya - TL)
   // GA: API fiyatı + 20 (markup) + (-40) = API fiyatı - 20
@@ -185,6 +185,10 @@ function renderTable(tableBody, codes, isEskiSection) {
       const eskiCode = CONFIG.YENI_ALIS_FROM[code];
       const eskiPrice = parseTurkishNumber(dataMap[eskiCode]?.Alis || '0');
       alisStr = eskiPrice === 0 ? '-' : formatTurkishNumber(eskiPrice + CONFIG.YENI_ALIS_BONUS);
+    } else if (code === 'B') {
+      // 22 Ayar Bilezik Alış: Has Altın (HH_T) Alış * 0.912
+      const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
+      alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.912);
     } else {
       // Normal: API alış + özel düzeltme
       const basePrice = parseTurkishNumber(item.Alis);
