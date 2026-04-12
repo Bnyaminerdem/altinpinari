@@ -449,8 +449,9 @@ body::before {
 /* ---- TV Footer ---- */
 .tv-footer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 16px;
   padding: 6px 16px;
   border-top: 2px solid var(--border-color-strong);
@@ -463,6 +464,7 @@ body::before {
 .footer-left {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 5px;
 }
 
@@ -640,19 +642,20 @@ body::before {
 
 /* ---- Eski Satır & Etiketi ---- */
 .iban-card {
-  display: inline-flex;
-  flex-direction: row;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   background: linear-gradient(135deg, rgba(0, 120, 90, 0.08), rgba(0, 80, 60, 0.04));
   border: 1px solid rgba(0, 120, 90, 0.2);
   border-radius: var(--radius-lg);
-  padding: 14px 20px;
-  margin: 0;
+  padding: 18px 25px;
+  margin: 0 auto;
   position: relative;
   overflow: hidden;
-  text-align: left;
+  text-align: center;
   box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  max-width: 450px;
 }
 
 .iban-card::before {
@@ -677,12 +680,14 @@ body::before {
 .iban-info-section {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
 }
 
 .iban-bank {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
 }
 
@@ -708,6 +713,7 @@ body::before {
 .iban-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   background: rgba(0, 0, 0, 0.03);
   border: 1px solid rgba(0, 0, 0, 0.06);
