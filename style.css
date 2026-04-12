@@ -633,48 +633,21 @@ body::before {
   vertical-align: middle;
 }
 
-/* ---- Eski Sarrafiye Section ---- */
-.eski-sarrafiye-section {
-  margin-top: 10px;
-  padding: 0 16px 8px;
-  position: relative;
-  z-index: 1;
+/* ---- Alt Izgara (Eski & Gümüş) ---- */
+.tv-grid-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 0 16px;
 }
 
-.eski-sarrafiye-section .tv-section-header {
-  border-bottom-color: rgba(0,0,0,0.1);
+#section-eski, #section-gumus {
+  margin-top: 0;
+  padding: 0;
 }
 
-.eski-sarrafiye-section .tv-section-title {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.eski-sarrafiye-section .tv-table-wrapper {
-  background: var(--bg-table-row-alt);
-  border-color: rgba(0,0,0,0.06);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.03);
-}
-
-.eski-sarrafiye-section .tv-table tbody tr {
-  opacity: 0.75;
-}
-
-.eski-sarrafiye-section .tv-table tbody tr:hover {
-  opacity: 1;
-}
-
-.eski-sarrafiye-section .tv-table tbody td {
-  padding: 5px 12px;
-  font-size: 0.8rem;
-}
-
-.eski-sarrafiye-section .tv-table tbody td:nth-child(2),
-.eski-sarrafiye-section .tv-table tbody td:nth-child(3) {
-  font-size: 0.82rem;
-}
-
-/* ---- IBAN Kart ---- */
+/* ---- Eski Satır & Etiketi ---- */
 .iban-card {
   display: inline-flex;
   flex-direction: row;

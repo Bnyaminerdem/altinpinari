@@ -20,11 +20,14 @@ const CONFIG = {
   // Eski Sarrafiye (alt kısımda ayrı gösterilecek)
   ESKI_CODES: ['EC', 'EY', 'ET', 'EG'],
 
-  // Gram & Toptan (Ata Toptan kaldırıldı, Gümüş Gram eklendi)
-  GRAM_CODES: ['GA', 'GAT', 'HH_T', 'CH_T', 'AG_T', 'B', '18', '14'],
+  // Gram & Toptan (ONS Altın en üste taşındı, Gümüş çıkarıldı)
+  GRAM_CODES: ['XAUUSD', 'GA', 'GAT', 'HH_T', 'CH_T', 'B', '18', '14'],
 
-  // Diğer (Gümüş buraya taşınmadı, borsa olarak kaldı veya çıkarıldı)
-  BORSA_CODES: ['XAUUSD'],
+  // Gümüş Grubu (Alt bölümde yan yana duracak)
+  GUMUS_CODES: ['AG_T', 'XAGUSD'],
+
+  // Borsa (Artık ONS burada değil)
+  BORSA_CODES: [],
 
   // Özel alış düzeltmeleri (+ veya - TL)
   ALIS_ADJUSTMENT: {  },
@@ -55,7 +58,8 @@ const CONFIG = {
     'HH_T': 'Has Altın',   'CH_T': 'Külçe Toptan',
     'A_T': 'Ata Toptan',   'B': '22 Ayar Bilezik',
     '18': '18 Ayar Altın', '14': '14 Ayar Altın',
-    'XAUUSD': 'ONS Altın', 'AG_T': 'Gümüş Gram'
+    'XAUUSD': 'ONS Altın', 'AG_T': 'Gümüş Gram',
+    'XAGUSD': 'Gümüş Ons'
   }
 };
 
@@ -189,6 +193,7 @@ function renderTable(tableBody, codes, isEskiSection) {
     let apiSatis = parseTurkishNumber(item.Satis);
     
     if (code === 'C' || code === 'EC') {
+      if (apiAlis > 0) apiAlis += 70;
       if (apiSatis > 0) apiSatis -= 50;
     }
     if (code === 'Y' || code === 'EY') {
@@ -269,10 +274,12 @@ function renderAllTables() {
   const zCount = renderTable(elements.ziynetTableBody, CONFIG.ZIYNET_CODES, false);
   const gCount = renderTable(elements.gramTableBody, CONFIG.GRAM_CODES, false);
   const eCount = renderTable(elements.eskiTableBody, CONFIG.ESKI_CODES, true);
+  const sCount = renderTable(elements.gumusTableBody, CONFIG.GUMUS_CODES, false);
 
   if (elements.ziynetBadge) elements.ziynetBadge.textContent = `${zCount} ürün`;
   if (elements.gramBadge) elements.gramBadge.textContent = `${gCount} ürün`;
   if (elements.eskiBadge) elements.eskiBadge.textContent = `${eCount} ürün`;
+  if (elements.gumusBadge) elements.gumusBadge.textContent = `${sCount} ürün`;
 }
 
 
@@ -304,6 +311,7 @@ function renderSkeletons() {
   if (elements.ziynetTableBody) elements.ziynetTableBody.innerHTML = skeletonRow.repeat(8);
   if (elements.gramTableBody) elements.gramTableBody.innerHTML = skeletonRow.repeat(8);
   if (elements.eskiTableBody) elements.eskiTableBody.innerHTML = skeletonRow.repeat(4);
+  if (elements.gumusTableBody) elements.gumusTableBody.innerHTML = skeletonRow.repeat(2);
 }
 
 // ---- Hata ----
@@ -365,13 +373,14 @@ async function init() {
     gramTableBody: document.getElementById('gram-table-body'),
     borsaTableBody: document.getElementById('borsa-table-body'),
     eskiTableBody: document.getElementById('eski-table-body'),
+    gumusTableBody: document.getElementById('gumus-table-body'),
     tickerContent: document.getElementById('ticker-content'),
     errorBanner: document.getElementById('error-banner'),
     errorMessage: document.getElementById('error-message'),
     ziynetBadge: document.getElementById('ziynet-badge'),
     gramBadge: document.getElementById('gram-badge'),
-    borsaBadge: document.getElementById('borsa-badge'),
-    eskiBadge: document.getElementById('eski-badge')
+    eskiBadge: document.getElementById('eski-badge'),
+    gumusBadge: document.getElementById('gumus-badge')
   };
 
   // Saat başlat
