@@ -37,6 +37,10 @@ const CONFIG = {
   // Özel alış düzeltmeleri (+ veya - TL)
   ALIS_ADJUSTMENT: { 'B': -20 },
 
+  // Özel satış düzeltmeleri (markup üzerine ek, + veya - TL)
+  // GA: API fiyatı + 20 (markup) + (-40) = API fiyatı - 20
+  SATIS_ADJUSTMENT: { 'GA': -40, 'GAT': -40, 'HH_T': -40, 'CH_T': -40 },
+
   // Eski kodlar (ESKİ etiketi gösterilir, soluk renk)
   ESKI_SET: new Set(['EC', 'EY', 'ET', 'EG']),
 
@@ -197,7 +201,9 @@ function renderTable(tableBody, codes, isEskiSection) {
       const extraBonus = (CONFIG.YENI_SATIS_BONUS && CONFIG.YENI_SATIS_BONUS[code]) || 0;
       satisStr = baseSatis === 0 ? '-' : formatTurkishNumber(baseSatis + CONFIG.SATIS_MARKUP + extraBonus);
     } else {
-      satisStr = addMarkupSatis(item.Satis);
+      const basePrice = parseTurkishNumber(item.Satis);
+      const satisAdj = (CONFIG.SATIS_ADJUSTMENT && CONFIG.SATIS_ADJUSTMENT[code]) || 0;
+      satisStr = basePrice === 0 ? '-' : formatTurkishNumber(basePrice + CONFIG.SATIS_MARKUP + satisAdj);
     }
 
     // Fiyat değişimi kontrolü
