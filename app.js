@@ -140,7 +140,6 @@ async function fetchGoldPrices() {
 
     hideError();
     renderAllTables();
-    renderTicker();
     updateLastUpdateTime();
 
     // Son fiyatları sakla (değişim tespiti için)
@@ -232,41 +231,14 @@ function renderTable(tableBody, codes, isEskiSection) {
 function renderAllTables() {
   const zCount = renderTable(elements.ziynetTableBody, CONFIG.ZIYNET_CODES, false);
   const gCount = renderTable(elements.gramTableBody, CONFIG.GRAM_CODES, false);
-  const bCount = renderTable(elements.borsaTableBody, CONFIG.BORSA_CODES, false);
   const eCount = renderTable(elements.eskiTableBody, CONFIG.ESKI_CODES, true);
 
   if (elements.ziynetBadge) elements.ziynetBadge.textContent = `${zCount} ürün`;
   if (elements.gramBadge) elements.gramBadge.textContent = `${gCount} ürün`;
-  if (elements.borsaBadge) elements.borsaBadge.textContent = `${bCount} ürün`;
   if (elements.eskiBadge) elements.eskiBadge.textContent = `${eCount} ürün`;
 }
 
-// ---- Ticker ----
-function renderTicker() {
-  if (!elements.tickerContent || goldData.length === 0) return;
 
-  const tickerCodes = ['GA', 'C', 'Y', 'T', 'A', 'XAUUSD', 'B', 'AG_T'];
-  const dataMap = {};
-  goldData.forEach(item => { dataMap[item.Kod] = item; });
-
-  let items = '';
-  tickerCodes.forEach(code => {
-    const item = dataMap[code];
-    if (!item) return;
-    const displayName = CONFIG.DISPLAY_NAMES[code] || item.Aciklama;
-    const satis = addMarkupSatis(item.Satis);
-    items += `
-      <span class="ticker-item">
-        <span class="label">${displayName}</span>
-        <span class="value">${satis} ₺</span>
-      </span>
-      <span class="ticker-divider">•</span>
-    `;
-  });
-
-  // Ticker'ı iki kez tekrarla (sonsuz kaydırma efekti)
-  elements.tickerContent.innerHTML = items + items;
-}
 
 // ---- Son Güncelleme ----
 function updateLastUpdateTime() {
@@ -294,7 +266,6 @@ function renderSkeletons() {
 
   if (elements.ziynetTableBody) elements.ziynetTableBody.innerHTML = skeletonRow.repeat(8);
   if (elements.gramTableBody) elements.gramTableBody.innerHTML = skeletonRow.repeat(8);
-  if (elements.borsaTableBody) elements.borsaTableBody.innerHTML = skeletonRow.repeat(2);
   if (elements.eskiTableBody) elements.eskiTableBody.innerHTML = skeletonRow.repeat(4);
 }
 
