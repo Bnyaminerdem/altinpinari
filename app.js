@@ -46,10 +46,10 @@ const CONFIG = {
 
   // Gösterilecek isimler
   DISPLAY_NAMES: {
-    'C': 'Çeyrek',  'EC': 'Çeyrek',
-    'Y': 'Yarım',   'EY': 'Yarım',
-    'T': 'Teklik',  'ET': 'Teklik',
-    'G': 'Gremse',  'EG': 'Gremse',
+    'C': 'Çeyrek',  'EC': 'Eski Çeyrek',
+    'Y': 'Yarım',   'EY': 'Eski Yarım',
+    'T': 'Teklik',  'ET': 'Eski Teklik',
+    'G': 'Gremse',  'EG': 'Eski Gremse',
     'A': 'Ata Cumhuriyet', 'A5': 'Ata Beşli',
     'R': 'Reşat Altın',    'H': 'Hamit Altın',
     'GA': 'Gram Altın',    'GAT': 'Gram Toptan',
@@ -108,25 +108,8 @@ let lastUpdateTime = null;
 let refreshTimer = null;
 let previousPrices = {};
 
-// ---- DOM Elemanları ----
-const elements = {
-  loadingOverlay: document.getElementById('loading-overlay'),
-  clockEl: document.getElementById('live-clock'),
-  dateEl: document.getElementById('live-date'),
-  updateTimeEl: document.getElementById('update-time'),
-  ziynetTableBody: document.getElementById('ziynet-table-body'),
-  gramTableBody: document.getElementById('gram-table-body'),
-  borsaTableBody: document.getElementById('borsa-table-body'),
-  eskiTableBody: document.getElementById('eski-table-body'),
-  tickerContent: document.getElementById('ticker-content'),
-  errorBanner: document.getElementById('error-banner'),
-  errorMessage: document.getElementById('error-message'),
-
-  ziynetBadge: document.getElementById('ziynet-badge'),
-  gramBadge: document.getElementById('gram-badge'),
-  borsaBadge: document.getElementById('borsa-badge'),
-  eskiBadge: document.getElementById('eski-badge')
-};
+// ---- DOM Elemanları (init içinde doldurulur) ----
+let elements = {};
 
 // ---- Saat ----
 function updateClock() {
@@ -364,6 +347,25 @@ function copyIban() {
 
 // ---- Init ----
 async function init() {
+  // DOM elemanlarını bul (DOMContentLoaded sonrası)
+  elements = {
+    loadingOverlay: document.getElementById('loading-overlay'),
+    clockEl: document.getElementById('live-clock'),
+    dateEl: document.getElementById('live-date'),
+    updateTimeEl: document.getElementById('update-time'),
+    ziynetTableBody: document.getElementById('ziynet-table-body'),
+    gramTableBody: document.getElementById('gram-table-body'),
+    borsaTableBody: document.getElementById('borsa-table-body'),
+    eskiTableBody: document.getElementById('eski-table-body'),
+    tickerContent: document.getElementById('ticker-content'),
+    errorBanner: document.getElementById('error-banner'),
+    errorMessage: document.getElementById('error-message'),
+    ziynetBadge: document.getElementById('ziynet-badge'),
+    gramBadge: document.getElementById('gram-badge'),
+    borsaBadge: document.getElementById('borsa-badge'),
+    eskiBadge: document.getElementById('eski-badge')
+  };
+
   // Saat başlat
   updateClock();
   setInterval(updateClock, 1000);
