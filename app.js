@@ -189,8 +189,21 @@ function renderTable(tableBody, codes, isEskiSection) {
     let apiSatis = parseTurkishNumber(item.Satis);
     
     if (code === 'C' || code === 'EC') {
-      if (apiAlis > 0) apiAlis -= 50;
       if (apiSatis > 0) apiSatis -= 50;
+    }
+    if (code === 'Y' || code === 'EY') {
+      if (apiAlis > 0) apiAlis += 200;
+    }
+    if (code === 'T' || code === 'ET') {
+      if (apiAlis > 0) apiAlis += 450;
+    }
+    if (code === 'G' || code === 'EG') {
+      if (apiAlis > 0) apiAlis += 900;
+      if (apiSatis > 0) apiSatis -= 1200;
+    }
+    if (code === 'A') {
+      if (apiAlis > 0) apiAlis += 200;
+      if (apiSatis > 0) apiSatis -= 250;
     }
 
     // Alış hesapla
