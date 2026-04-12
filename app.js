@@ -80,9 +80,10 @@ function parseTurkishNumber(str) {
  */
 function formatTurkishNumber(num) {
   if (num === 0) return '-';
-  return num.toLocaleString('tr-TR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+  // Küsüratları at (aşağı yuvarla)
+  return Math.floor(num).toLocaleString('tr-TR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   });
 }
 
