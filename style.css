@@ -818,50 +818,77 @@ body::before {
 }
 
 /* ---- Responsive ---- */
-@media (max-width: 640px) {
-  .header-inner {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
-  }
-
-  .header-brand {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .header-title {
-    font-size: 1.3rem;
-  }
-
-  .header-right {
-    align-items: center;
-  }
-
-  .live-clock {
-    font-size: 1.2rem;
+/* ---- Responsive (Mobil Uyumluluk) ---- */
+@media (max-width: 768px) {
+  .tv-main {
+    padding: 8px 8px;
   }
 
   .tv-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Mobilde tek sütun */
+    gap: 16px;
   }
 
-  .ticker-content {
-    gap: 20px;
+  .tv-right-col {
+    gap: 16px;
   }
 
-  .ticker-item {
-    font-size: 0.7rem;
+  /* Yazı boyutlarını küçült (fiyatlar birbirine girmesin) */
+  .tv-table tbody td {
+    padding: 8px 10px;
+    font-size: 0.95rem; 
   }
 
-  .eski-sarrafiye-section {
-    padding: 0 8px 8px;
+  .tv-table tbody td:nth-child(2),
+  .tv-table tbody td:nth-child(3) {
+    font-size: 1rem;
+  }
+
+  .tv-section-title {
+    font-size: 1.1rem;
+  }
+
+  .header {
+    padding: 8px 12px;
+  }
+
+  .header-inner {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .header-title {
+    font-size: 1.4rem;
+  }
+
+  .live-clock {
+    font-size: 1.3rem;
+  }
+
+  #section-eski {
+    margin-top: 16px;
+    padding: 0 8px;
+  }
+
+  /* Tablo sütun oranlarını mobilde ayarla */
+  .tv-table thead th:nth-child(1) { width: 40%; }
+  .tv-table thead th:nth-child(2),
+  .tv-table thead th:nth-child(3) {
+    width: 30%;
   }
 }
 
-@media (min-width: 641px) and (max-width: 1024px) {
-  .container {
-    max-width: 720px;
+/* Tablet / Orta Ekranlar */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .tv-table tbody td {
+    font-size: 1.1rem;
+    padding: 10px 14px;
+  }
+  
+  .tv-table tbody td:nth-child(2),
+  .tv-table tbody td:nth-child(3) {
+    font-size: 1.2rem;
   }
 }
 
