@@ -14,8 +14,11 @@ const CONFIG = {
   // API
   API_GOLD: 'https://altin-fiyat-proxy.yasireminciftci.workers.dev',
 
-  // Sarrafiye: Eski→Yeni çiftler halinde, sonra diğerleri
-  ZIYNET_CODES: ['EC', 'C', 'EY', 'Y', 'ET', 'T', 'EG', 'G', 'A', 'A5', 'R', 'H'],
+  // Yeni Sarrafiye (üst kısımda gösterilecek - eski kodlar yok)
+  ZIYNET_CODES: ['C', 'Y', 'T', 'G', 'A', 'A5', 'R', 'H'],
+
+  // Eski Sarrafiye (alt kısımda ayrı gösterilecek)
+  ESKI_CODES: ['EC', 'EY', 'ET', 'EG'],
 
   // Gram & Toptan (22 Ayar Hurda kaldırıldı)
   GRAM_CODES: ['GA', 'GAT', 'HH_T', 'CH_T', 'A_T', 'B', '18', '14'],
@@ -28,6 +31,9 @@ const CONFIG = {
   YENI_ALIS_FROM: { 'C': 'EC', 'Y': 'EY', 'T': 'ET', 'G': 'EG' },
   YENI_ALIS_BONUS: 100,
 
+  // Yeni çeyreğe (C) satış fiyatına ek 100 TL (arka planda)
+  YENI_SATIS_BONUS: { 'C': 100 },
+
   // Özel alış düzeltmeleri (+ veya - TL)
   ALIS_ADJUSTMENT: { 'B': -20 },
 
@@ -37,16 +43,6 @@ const CONFIG = {
   // Çift oluşturan eski→yeni eşleştirmesi (görsel gruplama için)
   PAIR_ESKI: new Set(['EC', 'EY', 'ET', 'EG']),
   PAIR_YENI: new Set(['C', 'Y', 'T', 'G']),
-
-  // İkonlar
-  ICONS: {
-    'C': '💰', 'EC': '💰', 'Y': '🪙', 'EY': '🪙',
-    'T': '🥇', 'ET': '🥇', 'G': '🏆', 'EG': '🏆',
-    'A': '⭐', 'A5': '🌟', 'R': '👑', 'H': '👑',
-    'GA': '📊', 'GAT': '📊', 'HH_T': '🔶', 'CH_T': '🔷',
-    'A_T': '⭐', 'B': '📿', '18': '🔸', '14': '🔹',
-    'XAUUSD': '🌍', 'AG_T': '🪨'
-  },
 
   // Gösterilecek isimler
   DISPLAY_NAMES: {
@@ -121,13 +117,15 @@ const elements = {
   ziynetTableBody: document.getElementById('ziynet-table-body'),
   gramTableBody: document.getElementById('gram-table-body'),
   borsaTableBody: document.getElementById('borsa-table-body'),
+  eskiTableBody: document.getElementById('eski-table-body'),
   tickerContent: document.getElementById('ticker-content'),
   errorBanner: document.getElementById('error-banner'),
   errorMessage: document.getElementById('error-message'),
 
   ziynetBadge: document.getElementById('ziynet-badge'),
   gramBadge: document.getElementById('gram-badge'),
-  borsaBadge: document.getElementById('borsa-badge')
+  borsaBadge: document.getElementById('borsa-badge'),
+  eskiBadge: document.getElementById('eski-badge')
 };
 
 // ---- Saat ----
@@ -177,7 +175,7 @@ async function fetchGoldPrices() {
 }
 
 // ---- Tablo Render ----
-function renderTable(tableBody, codes) {
+function renderTable(tableBody, codes, isEskiSection) {
   if (!tableBody) return 0;
 
   const dataMap = {};
@@ -185,19 +183,14 @@ function renderTable(tableBody, codes) {
 
   let html = '';
   let count = 0;
-  let pairGroupIndex = 0;
-  let lastWasEski = false;
 
   codes.forEach(code => {
     const item = dataMap[code];
     if (!item) return;
     count++;
 
-    const icon = CONFIG.ICONS[code] || '🔹';
     const displayName = CONFIG.DISPLAY_NAMES[code] || item.Aciklama;
     const isEski = CONFIG.ESKI_SET.has(code);
-    const isPairYeni = CONFIG.PAIR_YENI && CONFIG.PAIR_YENI.has(code);
-    const isPairEski = CONFIG.PAIR_ESKI && CONFIG.PAIR_ESKI.has(code);
 
     // Alış hesapla
     let alisStr;
@@ -218,20 +211,11 @@ function renderTable(tableBody, codes) {
     if (CONFIG.YENI_ALIS_FROM && CONFIG.YENI_ALIS_FROM[code]) {
       // Yeni sarrafiye: satışı da eski koddan al
       const eskiCode = CONFIG.YENI_ALIS_FROM[code];
-      satisStr = addMarkupSatis(dataMap[eskiCode]?.Satis || item.Satis);
+      const baseSatis = parseTurkishNumber(dataMap[eskiCode]?.Satis || item.Satis);
+      const extraBonus = (CONFIG.YENI_SATIS_BONUS && CONFIG.YENI_SATIS_BONUS[code]) || 0;
+      satisStr = baseSatis === 0 ? '-' : formatTurkishNumber(baseSatis + CONFIG.SATIS_MARKUP + extraBonus);
     } else {
       satisStr = addMarkupSatis(item.Satis);
-    }
-
-
-    // Pair grup rengi (Eski başladığında grup değişir)
-    if (isPairEski) {
-      if (lastWasEski === false) pairGroupIndex++;
-      lastWasEski = true;
-    } else if (isPairYeni) {
-      lastWasEski = false;
-    } else {
-      lastWasEski = false;
     }
 
     // Fiyat değişimi kontrolü
@@ -240,20 +224,15 @@ function renderTable(tableBody, codes) {
     const flashClass = hasChanged ? 'price-flash' : '';
 
     let rowClass = flashClass;
-    if (isPairEski) rowClass += ' row-eski';
-    if (isPairYeni) rowClass += ' row-yeni';
-    if (isPairEski || isPairYeni) {
-      rowClass += ` pair-group-${pairGroupIndex % 2}`;
-    }
+    if (isEskiSection) rowClass += ' row-eski';
 
+    // Eski sarrafiye için etiket
     let tagHTML = '';
-    if (isPairEski) tagHTML = '<span class="eski-tag">ESKİ</span>';
-    if (isPairYeni) tagHTML = '<span class="yeni-tag">YENİ</span>';
+    if (isEski && !isEskiSection) tagHTML = '<span class="eski-tag">ESKİ</span>';
 
     html += `
       <tr class="${rowClass.trim()}" data-code="${code}">
         <td>
-          <span class="product-icon">${icon}</span>
           <span class="product-name">${displayName}${tagHTML}</span>
         </td>
         <td>${alisStr}</td>
@@ -268,13 +247,15 @@ function renderTable(tableBody, codes) {
 
 
 function renderAllTables() {
-  const zCount = renderTable(elements.ziynetTableBody, CONFIG.ZIYNET_CODES);
-  const gCount = renderTable(elements.gramTableBody, CONFIG.GRAM_CODES);
-  const bCount = renderTable(elements.borsaTableBody, CONFIG.BORSA_CODES);
+  const zCount = renderTable(elements.ziynetTableBody, CONFIG.ZIYNET_CODES, false);
+  const gCount = renderTable(elements.gramTableBody, CONFIG.GRAM_CODES, false);
+  const bCount = renderTable(elements.borsaTableBody, CONFIG.BORSA_CODES, false);
+  const eCount = renderTable(elements.eskiTableBody, CONFIG.ESKI_CODES, true);
 
   if (elements.ziynetBadge) elements.ziynetBadge.textContent = `${zCount} ürün`;
   if (elements.gramBadge) elements.gramBadge.textContent = `${gCount} ürün`;
   if (elements.borsaBadge) elements.borsaBadge.textContent = `${bCount} ürün`;
+  if (elements.eskiBadge) elements.eskiBadge.textContent = `${eCount} ürün`;
 }
 
 // ---- Ticker ----
@@ -321,7 +302,6 @@ function renderSkeletons() {
   const skeletonRow = `
     <tr>
       <td>
-        <span class="product-icon" style="opacity:0.3">⬜</span>
         <span class="product-name"><span class="skeleton" style="width:120px"></span></span>
       </td>
       <td><span class="skeleton"></span></td>
@@ -329,9 +309,10 @@ function renderSkeletons() {
     </tr>
   `;
 
-  if (elements.ziynetTableBody) elements.ziynetTableBody.innerHTML = skeletonRow.repeat(12);
-  if (elements.gramTableBody) elements.gramTableBody.innerHTML = skeletonRow.repeat(9);
+  if (elements.ziynetTableBody) elements.ziynetTableBody.innerHTML = skeletonRow.repeat(8);
+  if (elements.gramTableBody) elements.gramTableBody.innerHTML = skeletonRow.repeat(8);
   if (elements.borsaTableBody) elements.borsaTableBody.innerHTML = skeletonRow.repeat(2);
+  if (elements.eskiTableBody) elements.eskiTableBody.innerHTML = skeletonRow.repeat(4);
 }
 
 // ---- Hata ----

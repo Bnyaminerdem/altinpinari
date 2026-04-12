@@ -49,16 +49,15 @@
 
     <!-- Error Banner -->
     <div class="error-banner" id="error-banner">
-      ⚠️ <span id="error-message">Bir hata oluştu</span>
+      <span id="error-message">Bir hata oluştu</span>
     </div>
 
     <!-- TV Grid: Sol = Sarrafiye | Sağ = Gram Toptan + Diğer -->
     <div class="tv-grid">
 
-      <!-- SOL KOLON: Sarrafiye -->
+      <!-- SOL KOLON: Sarrafiye (Yeni) -->
       <section class="tv-section" id="section-ziynet">
         <div class="tv-section-header">
-          <span class="tv-section-icon">🏅</span>
           <h2 class="tv-section-title">Sarrafiye</h2>
           <span class="tv-section-badge" id="ziynet-badge">Yükleniyor</span>
         </div>
@@ -84,7 +83,6 @@
         <!-- Gram & Toptan -->
         <section class="tv-section" id="section-gram">
           <div class="tv-section-header">
-            <span class="tv-section-icon">⚖️</span>
             <h2 class="tv-section-title">Gram &amp; Toptan</h2>
             <span class="tv-section-badge" id="gram-badge">Yükleniyor</span>
           </div>
@@ -107,7 +105,6 @@
         <!-- Diğer -->
         <section class="tv-section tv-section-small" id="section-borsa">
           <div class="tv-section-header">
-            <span class="tv-section-icon">🌍</span>
             <h2 class="tv-section-title">Diğer</h2>
             <span class="tv-section-badge" id="borsa-badge">Yükleniyor</span>
           </div>
@@ -132,21 +129,41 @@
 
   </main>
 
+  <!-- Eski Sarrafiye Section (Alt kısım) -->
+  <div class="eski-sarrafiye-section">
+    <div class="tv-section-header">
+      <h2 class="tv-section-title">Eski Sarrafiye</h2>
+      <span class="tv-section-badge" id="eski-badge">Yükleniyor</span>
+    </div>
+    <div class="tv-table-wrapper">
+      <table class="tv-table" id="eski-table">
+        <thead>
+          <tr>
+            <th>Ürün</th>
+            <th>Alış (₺)</th>
+            <th>Satış (₺)</th>
+          </tr>
+        </thead>
+        <tbody id="eski-table-body">
+          <!-- JS ile doldurulacak -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="tv-footer">
     <!-- Sol: Marka + İletişim -->
     <div class="footer-left">
       <div class="footer-brand-row">
         <img src="logo.png" alt="Logo" class="footer-logo" width="28" height="28">
-        <span class="footer-brand-name">✦ Altın Pınarı Kuyumculuk ✦</span>
+        <span class="footer-brand-name">Altın Pınarı Kuyumculuk</span>
       </div>
       <div class="footer-contact">
         <span class="footer-contact-item">
-          <span class="icon">📍</span>
           <span>Bağlarbaşı, Kızlarpınarı Cd., Keçiören/Ankara</span>
         </span>
         <span class="footer-contact-item">
-          <span class="icon">📞</span>
           <span>(0312) 359 49 59</span>
         </span>
       </div>
@@ -165,7 +182,6 @@
       </div>
       <div class="iban-info-section">
         <div class="iban-bank">
-          <span class="iban-bank-logo">🏦</span>
           <span class="iban-bank-name">Kuveyt Türk</span>
           <span class="iban-holder-inline">— Nevzat Arslan ve Ortağı</span>
         </div>
