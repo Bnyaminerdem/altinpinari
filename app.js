@@ -39,7 +39,7 @@ const CONFIG = {
 
   // Özel satış düzeltmeleri (markup üzerine ek, + veya - TL)
   // GA: API fiyatı + 20 (markup) + (-40) = API fiyatı - 20
-  SATIS_ADJUSTMENT: { 'GA': -40, 'GAT': -40, 'HH_T': -40, 'CH_T': -40, 'A_T': -40 },
+  SATIS_ADJUSTMENT: { 'GA': -40, 'GAT': -40, 'CH_T': -40, 'A_T': -40 },
 
   // Eski kodlar (ESKİ etiketi gösterilir, soluk renk)
   ESKI_SET: new Set(['EC', 'EY', 'ET', 'EG']),
@@ -57,7 +57,7 @@ const CONFIG = {
     'A': 'Ata Cumhuriyet', 'A5': 'Ata Beşli',
     'R': 'Reşat Altın',    'H': 'Hamit Altın',
     'GA': 'Gram Altın',    'GAT': 'Gram Toptan',
-    'HH_T': 'Has Toptan',  'CH_T': 'Külçe Toptan',
+    'HH_T': 'Has Altın',   'CH_T': 'Külçe Toptan',
     'A_T': 'Ata Toptan',   'B': '22 Ayar Bilezik',
     '18': '18 Ayar Altın', '14': '14 Ayar Altın',
     'XAUUSD': 'ONS Altın', 'AG_T': 'Gümüş'
