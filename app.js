@@ -21,7 +21,7 @@ const CONFIG = {
   ESKI_CODES: ['EC', 'EY', 'ET', 'EG'],
 
   // Gram & Toptan
-  GRAM_CODES: ['XAUUSD', 'GA', 'GAT', 'HH_T', 'CH_T', 'B', '18', '14', 'AG_T'],
+  GRAM_CODES: ['XAUUSD', 'GA', 'HH_T', 'CH_T', 'B', '18', '14', 'AG_T'],
 
   // Borsa
   BORSA_CODES: [],
@@ -36,7 +36,7 @@ const CONFIG = {
   // GA: API fiyatı + 20 (markup) + (-40) = API fiyatı - 20
   SATIS_ADJUSTMENT: { 
     'GA': -40, 'GAT': -40, 'CH_T': -20, 'A_T': -40, 
-    'HH_T': -20, 'XAUUSD': -20, 'AG_T': -20, 'XAGUSD': -20 
+    'HH_T': -20, 'XAUUSD': -20, 'AG_T': -19, 'XAGUSD': -20 
   },
 
   // Eski kodlar (ESKİ etiketi gösterilir, soluk renk)
