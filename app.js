@@ -20,11 +20,11 @@ const CONFIG = {
   // Eski Sarrafiye (alt kısımda ayrı gösterilecek)
   ESKI_CODES: ['EC', 'EY', 'ET', 'EG'],
 
-  // Gram & Toptan (22 Ayar Hurda kaldırıldı)
-  GRAM_CODES: ['GA', 'GAT', 'HH_T', 'CH_T', 'A_T', 'B', '18', '14'],
+  // Gram & Toptan (Ata Toptan kaldırıldı, Gümüş Gram eklendi)
+  GRAM_CODES: ['GA', 'GAT', 'HH_T', 'CH_T', 'AG_T', 'B', '18', '14'],
 
-  // Diğer
-  BORSA_CODES: ['XAUUSD', 'AG_T'],
+  // Diğer (Gümüş buraya taşınmadı, borsa olarak kaldı veya çıkarıldı)
+  BORSA_CODES: ['XAUUSD'],
 
   // Özel alış düzeltmeleri (+ veya - TL)
   ALIS_ADJUSTMENT: {  },
@@ -49,13 +49,13 @@ const CONFIG = {
     'Y': 'Yarım',   'EY': 'Eski Yarım',
     'T': 'Teklik',  'ET': 'Eski Teklik',
     'G': 'Gremse',  'EG': 'Eski Gremse',
-    'A': 'Ata Cumhuriyet', 'A5': 'Ata Beşli',
+    'A': 'Ata Lira',       'A5': 'Ata Beşli',
     'R': 'Reşat Altın',    'H': 'Hamit Altın',
     'GA': 'Gram Altın',    'GAT': 'Gram Toptan',
     'HH_T': 'Has Altın',   'CH_T': 'Külçe Toptan',
     'A_T': 'Ata Toptan',   'B': '22 Ayar Bilezik',
     '18': '18 Ayar Altın', '14': '14 Ayar Altın',
-    'XAUUSD': 'ONS Altın', 'AG_T': 'Gümüş'
+    'XAUUSD': 'ONS Altın', 'AG_T': 'Gümüş Gram'
   }
 };
 
@@ -166,27 +166,45 @@ function renderTable(tableBody, codes, isEskiSection) {
   let count = 0;
 
   codes.forEach(code => {
-    const item = dataMap[code];
+    // 1. Veri Kaynağı Yönlendirme (MAPPING)
+    let sourceCode = code;
+    // Normal sarrafiyeler eski fiyatlarını göstersin
+    if (code === 'C') sourceCode = 'EC';
+    if (code === 'Y') sourceCode = 'EY';
+    if (code === 'T') sourceCode = 'ET';
+    if (code === 'G') sourceCode = 'EG';
+    // Ata Lira, Ata Toptan fiyatını göstersin
+    if (code === 'A') sourceCode = 'A_T';
+
+    const item = dataMap[sourceCode];
     if (!item) return;
     count++;
 
     const displayName = CONFIG.DISPLAY_NAMES[code] || item.Aciklama;
     const isEski = CONFIG.ESKI_SET.has(code);
+    const isSarrafiye = CONFIG.ZIYNET_CODES.includes(code) || CONFIG.ESKI_CODES.includes(code);
+
+    // Çeyrek indirimi (-50 TL) - Sadece C ve EC için geçerli
+    let apiAlis = parseTurkishNumber(item.Alis);
+    let apiSatis = parseTurkishNumber(item.Satis);
+    
+    if (code === 'C' || code === 'EC') {
+      if (apiAlis > 0) apiAlis -= 50;
+      if (apiSatis > 0) apiSatis -= 50;
+    }
 
     // Alış hesapla
     let alisStr;
-    const isSarrafiye = CONFIG.ZIYNET_CODES.includes(code) || CONFIG.ESKI_CODES.includes(code);
-
     if (isSarrafiye) {
-      // Sarrafiye: Girdiği gibi (ham veri)
-      alisStr = formatAlis(item.Alis);
+      // Sarrafiye: Girdiği gibi (Çeyrekte yukarıda eksi yaptık)
+      alisStr = apiAlis === 0 ? '-' : formatTurkishNumber(apiAlis);
     } else if (code === 'B') {
       // 22 Ayar Bilezik Alış: Has Altın (HH_T) Alış * 0.912
       const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
       alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.912);
     } else {
-      // Normal: API alış + özel düzeltme
-      const basePrice = parseTurkishNumber(item.Alis);
+      // Normal (Gram vb): API alış + özel düzeltme
+      const basePrice = apiAlis;
       const adj = (CONFIG.ALIS_ADJUSTMENT && CONFIG.ALIS_ADJUSTMENT[code]) || 0;
       alisStr = basePrice === 0 ? '-' : formatTurkishNumber(basePrice + adj);
     }
@@ -194,14 +212,14 @@ function renderTable(tableBody, codes, isEskiSection) {
     // Satış hesapla
     let satisStr;
     if (isSarrafiye) {
-      // Sarrafiye: Girdiği gibi (ham veri)
-      satisStr = formatAlis(item.Satis);
+      // Sarrafiye: Girdiği gibi
+      satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis);
     } else if (code === 'B') {
       // 22 Ayar Bilezik: Has Altın (HH_T) Satış * 0.928
       const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || '0');
       satisStr = hasSatis === 0 ? '-' : formatTurkishNumber(hasSatis * 0.928);
     } else {
-      const basePrice = parseTurkishNumber(item.Satis);
+      const basePrice = apiSatis;
       const satisAdj = (CONFIG.SATIS_ADJUSTMENT && CONFIG.SATIS_ADJUSTMENT[code]) || 0;
       satisStr = basePrice === 0 ? '-' : formatTurkishNumber(basePrice + CONFIG.SATIS_MARKUP + satisAdj);
     }
