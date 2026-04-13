@@ -20,8 +20,8 @@ const CONFIG = {
   // Gram Altın (24 Ayar)
   GRAM_CODES: ['G1', 'G5', 'G10', 'G20', 'G50', 'G100'],
 
-  // Altın (ONS, Has)
-  ALTIN_CODES: ['XAUUSD', 'HH_T'],
+  // Altın (ONS, Has, 22k, 18k, 14k)
+  ALTIN_CODES: ['XAUUSD', 'HH_T', 'B', '18', '14'],
 
   // Eski Sarrafiye (Tekil kodlar - grup tespiti için saklanıyor)
   ESKI_CODES: ['EC', 'EY', 'ET', 'EG'],
@@ -260,7 +260,7 @@ function renderTable(tableBody, codes, isEskiSection) {
       alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.550);
     } else if (code === '18') {
       const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
-      alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.710);
+      alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.700);
     } else {
       const adj = (CONFIG.ALIS_ADJUSTMENT && CONFIG.ALIS_ADJUSTMENT[code]) || 0;
       alisStr = apiAlis === 0 ? '-' : formatTurkishNumber(apiAlis + adj);
@@ -276,6 +276,12 @@ function renderTable(tableBody, codes, isEskiSection) {
     } else if (code === 'B') {
       const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || dataMap['HAS']?.Satis || '0');
       satisStr = hasSatis === 0 ? '-' : formatTurkishNumber(hasSatis * 0.928);
+    } else if (code === '14') {
+      const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || '0');
+      satisStr = hasSatis === 0 ? '-' : formatTurkishNumber(hasSatis * 0.650);
+    } else if (code === '18') {
+      // 18 Ayar Satış: Altınkaynaktan çekilenin aynısı (raw apiSatis)
+      satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis);
     } else {
       const satisAdj = (CONFIG.SATIS_ADJUSTMENT && CONFIG.SATIS_ADJUSTMENT[code]) || 0;
       satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis + CONFIG.SATIS_MARKUP + satisAdj);
