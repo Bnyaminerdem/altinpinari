@@ -14,17 +14,17 @@ const CONFIG = {
   // API
   API_GOLD: 'https://altin-fiyat-proxy.yasireminciftci.workers.dev',
 
-  // Yeni Sarrafiye (üst kısımda gösterilecek - eski kodlar yok)
-  ZIYNET_CODES: ['C', 'Y', 'T', 'G', 'A', 'A5', 'R', 'H'],
+  // Sarrafiye (Yeni + Eski)
+  ZIYNET_CODES: ['C', 'Y', 'T', 'G', 'A', 'A5', 'R', 'EC', 'EY', 'ET', 'EG'],
 
-  // Eski Sarrafiye (alt kısımda ayrı gösterilecek)
+  // Gram Altın (24 Ayar)
+  GRAM_CODES: ['G1', 'G5', 'G10', 'G20', 'G50', 'G100'],
+
+  // Altın (ONS, Has)
+  ALTIN_CODES: ['XAUUSD', 'HH_T'],
+
+  // Eski Sarrafiye (Tekil kodlar - grup tespiti için saklanıyor)
   ESKI_CODES: ['EC', 'EY', 'ET', 'EG'],
-
-  // Gram & Toptan
-  GRAM_CODES: ['XAUUSD', 'GA', 'HH_T', 'CH_T', 'B', '18', '14', 'AG_T'],
-
-  // Borsa
-  BORSA_CODES: [],
 
   // Özel alış düzeltmeleri (+ veya - TL)
   ALIS_ADJUSTMENT: {  },
@@ -35,7 +35,7 @@ const CONFIG = {
   // Özel satış düzeltmeleri (markup üzerine ek, + veya - TL)
   // GA: API fiyatı + 20 (markup) + (-40) = API fiyatı - 20
   SATIS_ADJUSTMENT: { 
-    'GA': -40, 'GAT': -40, 'CH_T': -20, 'A_T': -40, 
+    'CH_T': -20, 'A_T': -40, 
     'HH_T': -20, 'XAUUSD': -20, 'AG_T': -19, 'XAGUSD': -20 
   },
 
@@ -58,7 +58,13 @@ const CONFIG = {
     'HH_T': 'Has Altın',   'CH_T': 'Külçe Toptan',
     'A_T': 'Ata Toptan',   'B': '22 Ayar Bilezik',
     '18': '18 Ayar Altın', '14': '14 Ayar Altın',
-    'XAUUSD': 'ONS', 'AG_T': 'Gümüş'
+    'XAUUSD': 'ONS', 'AG_T': 'Gümüş',
+    'G1': 'Gram Altın',
+    'G5': '24 Ayar 5 Gram',
+    'G10': '24 Ayar 10 Gram',
+    'G20': '24 Ayar 20 Gram',
+    'G50': '24 Ayar 50 Gram',
+    'G100': '24 Ayar 100 Gram'
   }
 };
 
@@ -168,10 +174,25 @@ function renderTable(tableBody, codes, isEskiSection) {
 
   let html = '';
   let count = 0;
+  let hasShownEskiSeparator = false;
 
   codes.forEach(code => {
+    // 0. ESKİ Grubu için Ayırıcı (Eski sarrafiyeler başlıyorsa)
+    if (CONFIG.ESKI_SET.has(code) && !hasShownEskiSeparator) {
+      html += `
+        <tr class="table-separator">
+          <td colspan="3">
+            <span class="separator-label">Eski Sarrafiye</span>
+          </td>
+        </tr>
+      `;
+      hasShownEskiSeparator = true;
+    }
+
     // 1. Veri Kaynağı Yönlendirme (MAPPING)
     let sourceCode = code;
+    let weight = 1;
+
     // Normal sarrafiyeler eski fiyatlarını göstersin
     if (code === 'C') sourceCode = 'EC';
     if (code === 'Y') sourceCode = 'EY';
@@ -180,82 +201,122 @@ function renderTable(tableBody, codes, isEskiSection) {
     // Ata Lira, Ata Toptan fiyatını göstersin
     if (code === 'A') sourceCode = 'A_T';
 
-    const item = dataMap[sourceCode];
-    if (!item) return;
-    count++;
+    // GRAM ALTIN MANTIĞI (Sadece G1, G5, G10, G20, G50, G100 — 'G' Gremse'dir, karışmasın)
+    if (CONFIG.GRAM_CODES.includes(code)) {
+      sourceCode = 'GAT';
+      weight = parseInt(code.substring(1));
+    }
 
-    const displayName = CONFIG.DISPLAY_NAMES[code] || item.Aciklama;
+    const item = dataMap[sourceCode] || dataMap['GAT'] || dataMap['GA_T'] || dataMap['GA'] || dataMap['HH_T'];
+    
+    const displayName = CONFIG.DISPLAY_NAMES[code] || (item ? item.Aciklama : code);
     const isEski = CONFIG.ESKI_SET.has(code);
     const isSarrafiye = CONFIG.ZIYNET_CODES.includes(code) || CONFIG.ESKI_CODES.includes(code);
 
-    // Çeyrek indirimi (-50 TL) - Sadece C ve EC için geçerli
-    let apiAlis = parseTurkishNumber(item.Alis);
-    let apiSatis = parseTurkishNumber(item.Satis);
+    let apiAlis = item ? parseTurkishNumber(item.Alis) : 0;
+    let apiSatis = item ? parseTurkishNumber(item.Satis) : 0;
     
+    // Sarrafiye Alış/Satış Düzeltmeleri
     if (code === 'C' || code === 'EC') {
-      if (apiAlis > 0) apiAlis += 70;
-      if (apiSatis > 0) apiSatis -= 50;
+      if (apiAlis > 0) apiAlis += 100;
+      if (apiSatis > 0) apiSatis -= 100;
     }
     if (code === 'Y' || code === 'EY') {
-      if (apiAlis > 0) apiAlis += 200;
+      if (apiAlis > 0) apiAlis += 250;
+      if (apiSatis > 0) apiSatis -= 200;
     }
     if (code === 'T' || code === 'ET') {
-      if (apiAlis > 0) apiAlis += 450;
+      if (apiAlis > 0) apiAlis += 500;
+      if (apiSatis > 0) apiSatis -= 100;
     }
     if (code === 'G' || code === 'EG') {
-      if (apiAlis > 0) apiAlis += 900;
-      if (apiSatis > 0) apiSatis -= 1200;
+      if (apiAlis > 0) apiAlis += 700;
+      if (apiSatis > 0) apiSatis += 4000;
     }
     if (code === 'A') {
-      if (apiAlis > 0) apiAlis += 200;
-      if (apiSatis > 0) apiSatis -= 250;
+      if (apiAlis > 0) apiAlis += 270;
+      if (apiSatis > 0) apiSatis -= 300;
     }
 
+    const useItem = item;
+    if (!useItem) return; // Veri bulunamadı
+    
+    // Fiyatları çek
+    let rawAlis = parseTurkishNumber(useItem.Alis);
+    let rawSatis = parseTurkishNumber(useItem.Satis);
+
+    // Ağırlıkla çarp
+    apiAlis = rawAlis > 0 ? (rawAlis * weight) : 0;
+    apiSatis = rawSatis > 0 ? (rawSatis * weight) : 0;
+    
     // Alış hesapla
     let alisStr;
-    if (isSarrafiye) {
-      // Sarrafiye: Girdiği gibi (Çeyrekte yukarıda eksi yaptık)
+    if (CONFIG.GRAM_CODES.includes(code)) {
+      // GRAM ALTIN: Ham fiyat, hiçbir ekleme/çıkarma yok
+      alisStr = apiAlis === 0 ? '-' : formatTurkishNumber(apiAlis);
+    } else if (isSarrafiye) {
       alisStr = apiAlis === 0 ? '-' : formatTurkishNumber(apiAlis);
     } else if (code === 'B') {
-      // 22 Ayar Bilezik Alış: Has Altın (HH_T) Alış * 0.912
-      const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
+      const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || dataMap['HAS']?.Alis || '0');
       alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.912);
     } else if (code === '14') {
-      // 14 Ayar Altın Alış: Has Altın (HH_T) Alış * 0.550
       const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
       alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.550);
     } else if (code === '18') {
-      // 18 Ayar Altın Alış: Has Altın (HH_T) Alış * 0.710
       const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
       alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.710);
     } else {
-      // Normal (Gram vb): API alış + özel düzeltme
-      const basePrice = apiAlis;
       const adj = (CONFIG.ALIS_ADJUSTMENT && CONFIG.ALIS_ADJUSTMENT[code]) || 0;
-      alisStr = basePrice === 0 ? '-' : formatTurkishNumber(basePrice + adj);
+      alisStr = apiAlis === 0 ? '-' : formatTurkishNumber(apiAlis + adj);
     }
 
     // Satış hesapla
     let satisStr;
-    if (isSarrafiye) {
-      // Sarrafiye: Girdiği gibi
+    if (CONFIG.GRAM_CODES.includes(code)) {
+      // GRAM ALTIN: Ham fiyat, hiçbir ekleme/çıkarma yok
+      satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis);
+    } else if (isSarrafiye) {
       satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis);
     } else if (code === 'B') {
-      // 22 Ayar Bilezik: Has Altın (HH_T) Satış * 0.928
-      const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || '0');
+      const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || dataMap['HAS']?.Satis || '0');
       satisStr = hasSatis === 0 ? '-' : formatTurkishNumber(hasSatis * 0.928);
     } else {
-      const basePrice = apiSatis;
       const satisAdj = (CONFIG.SATIS_ADJUSTMENT && CONFIG.SATIS_ADJUSTMENT[code]) || 0;
-      satisStr = basePrice === 0 ? '-' : formatTurkishNumber(basePrice + CONFIG.SATIS_MARKUP + satisAdj);
+      satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis + CONFIG.SATIS_MARKUP + satisAdj);
     }
 
-    // Fiyat değişimi kontrolü
-    const prev = previousPrices[code];
-    const hasChanged = prev && (prev.alis !== item.Alis || prev.satis !== item.Satis);
-    const flashClass = hasChanged ? 'price-flash' : '';
+    // Yüzde Değişim ve Ok Hesabı
+    const trendValue = parseFloat(useItem.Yuzde?.replace(',', '.') || '0');
+    let trendHTML = '';
+    let trendClass = 'trend-equal';
+    let arrowSVG = '';
 
-    let rowClass = flashClass;
+    if (trendValue > 0) {
+      trendClass = 'trend-up';
+      arrowSVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
+    } else if (trendValue < 0) {
+      trendClass = 'trend-down';
+      arrowSVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+    }
+    trendHTML = `<div class="trend-indicator ${trendClass}">${arrowSVG}</div>`;
+
+
+    // Fiyat değişimi kontrolü (Renkli Flash için)
+    const prev = previousPrices[code];
+    let changeClass = '';
+    
+    if (prev) {
+      const prevSatis = parseTurkishNumber(prev.satis || '0');
+      const currentSatis = parseTurkishNumber(useItem.Satis || '0');
+      
+      if (currentSatis > prevSatis) changeClass = 'price-flash-up';
+      else if (currentSatis < prevSatis) changeClass = 'price-flash-down';
+      else if (prev.alis !== useItem.Alis || prev.satis !== useItem.Satis) changeClass = 'price-flash';
+    }
+
+    count++;
+
+    let rowClass = changeClass;
     if (isEskiSection) rowClass += ' row-eski';
 
     // Eski sarrafiye için etiket
@@ -269,6 +330,7 @@ function renderTable(tableBody, codes, isEskiSection) {
         </td>
         <td>${alisStr}</td>
         <td>${satisStr}</td>
+        <td>${trendHTML}</td>
       </tr>
     `;
   });
@@ -281,11 +343,11 @@ function renderTable(tableBody, codes, isEskiSection) {
 function renderAllTables() {
   const zCount = renderTable(elements.ziynetTableBody, CONFIG.ZIYNET_CODES, false);
   const gCount = renderTable(elements.gramTableBody, CONFIG.GRAM_CODES, false);
-  const eCount = renderTable(elements.eskiTableBody, CONFIG.ESKI_CODES, true);
+  const aCount = renderTable(elements.altinTableBody, CONFIG.ALTIN_CODES, false);
 
   if (elements.ziynetBadge) elements.ziynetBadge.textContent = `${zCount} ürün`;
   if (elements.gramBadge) elements.gramBadge.textContent = `${gCount} ürün`;
-  if (elements.eskiBadge) elements.eskiBadge.textContent = `${eCount} ürün`;
+  if (elements.altinBadge) elements.altinBadge.textContent = `${aCount} ürün`;
 }
 
 
@@ -314,9 +376,9 @@ function renderSkeletons() {
     </tr>
   `;
 
-  if (elements.ziynetTableBody) elements.ziynetTableBody.innerHTML = skeletonRow.repeat(8);
-  if (elements.gramTableBody) elements.gramTableBody.innerHTML = skeletonRow.repeat(8);
-  if (elements.eskiTableBody) elements.eskiTableBody.innerHTML = skeletonRow.repeat(4);
+  if (elements.ziynetTableBody) elements.ziynetTableBody.innerHTML = skeletonRow.repeat(10);
+  if (elements.gramTableBody) elements.gramTableBody.innerHTML = skeletonRow.repeat(6);
+  if (elements.altinTableBody) elements.altinTableBody.innerHTML = skeletonRow.repeat(2);
 }
 
 // ---- Hata ----
@@ -366,6 +428,92 @@ function copyIban() {
 }
 
 
+// ---- Mobil Sekmeler ----
+function setupMobileTabs() {
+  const tabButtons = document.querySelectorAll('.mobile-tab');
+  const tabContents = document.querySelectorAll('.mobile-tab-content');
+
+  if (!tabButtons.length) return;
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-target');
+
+      // Butonları güncelle
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // İçerikleri güncelle
+      tabContents.forEach(content => {
+        content.classList.remove('active');
+        if (content.id === target) {
+          content.classList.add('active');
+        }
+      });
+
+      // Sayfayı yukarı kaydır
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+
+// ---- Sidebar (Mobil) ----
+function setupSidebar() {
+  const burger = document.getElementById('hamburger-menu');
+  const sidebar = document.getElementById('mobile-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const closeBtn = document.getElementById('sidebar-close-btn');
+
+  if (!burger || !sidebar || !overlay || !closeBtn) return;
+
+  function openSidebar() {
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Kaydırmayı engelle
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.style.overflow = ''; // Kaydırmayı aç
+  }
+
+  burger.addEventListener('click', openSidebar);
+  closeBtn.addEventListener('click', closeSidebar);
+  overlay.addEventListener('click', closeSidebar);
+
+  // İletişim Toggle
+  const contactToggle = document.getElementById('contact-toggle');
+  const contactDetails = document.getElementById('contact-details');
+  if (contactToggle && contactDetails) {
+    contactToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      contactToggle.classList.toggle('active');
+      contactDetails.classList.toggle('active');
+    });
+  }
+
+  // Hakkımızda Toggle
+  const aboutToggle = document.getElementById('about-toggle');
+  const aboutDetails = document.getElementById('about-details');
+  if (aboutToggle && aboutDetails) {
+    aboutToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      aboutToggle.classList.toggle('active');
+      aboutDetails.classList.toggle('active');
+    });
+  }
+
+  // Linklere basınca kapat (İletişim ve Hakkımızda hariç)
+  document.querySelectorAll('.sidebar-link:not(#contact-toggle):not(#about-toggle)').forEach(link => {
+    link.addEventListener('click', closeSidebar);
+  });
+}
+
+
 // ---- Init ----
 async function init() {
   // DOM elemanlarını bul (DOMContentLoaded sonrası)
@@ -376,18 +524,24 @@ async function init() {
     updateTimeEl: document.getElementById('update-time'),
     ziynetTableBody: document.getElementById('ziynet-table-body'),
     gramTableBody: document.getElementById('gram-table-body'),
-    eskiTableBody: document.getElementById('eski-table-body'),
+    altinTableBody: document.getElementById('altin-table-body'),
     tickerContent: document.getElementById('ticker-content'),
     errorBanner: document.getElementById('error-banner'),
     errorMessage: document.getElementById('error-message'),
     ziynetBadge: document.getElementById('ziynet-badge'),
     gramBadge: document.getElementById('gram-badge'),
-    eskiBadge: document.getElementById('eski-badge')
+    altinBadge: document.getElementById('altin-badge')
   };
 
   // Saat başlat
   updateClock();
   setInterval(updateClock, 1000);
+
+  // Mobil sekmeleri ayarla
+  setupMobileTabs();
+
+  // Sidebar ayarla
+  setupSidebar();
 
   // İlk yükleme skeletonları
   renderSkeletons();

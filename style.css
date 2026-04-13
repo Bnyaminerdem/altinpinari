@@ -182,7 +182,7 @@ body::before {
 .tv-right-col {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
 }
 
 /* ---- TV Sections ---- */
@@ -260,7 +260,7 @@ body::before {
   background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
   padding: 14px 20px;
   text-align: left;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--gold-dark);
   text-transform: uppercase;
@@ -268,10 +268,14 @@ body::before {
   border-bottom: 2px solid var(--border-color-strong);
 }
 
-.tv-table thead th:nth-child(1) { width: 38%; }
+.tv-table thead th:nth-child(1) { width: 33%; }
 .tv-table thead th:nth-child(2),
 .tv-table thead th:nth-child(3) {
-  width: 31%;
+  width: 25%;
+  text-align: right;
+}
+.tv-table thead th:nth-child(4) {
+  width: 17%;
   text-align: right;
 }
 
@@ -289,8 +293,8 @@ body::before {
 }
 
 .tv-table tbody td {
-  padding: 14px 20px;
-  font-size: 1.7rem;
+  padding: 12px 20px;
+  font-size: 1.4rem;
   vertical-align: middle;
 }
 
@@ -303,16 +307,36 @@ body::before {
 }
 
 .tv-table tbody td:nth-child(2),
-.tv-table tbody td:nth-child(3) {
+.tv-table tbody td:nth-child(3),
+.tv-table tbody td:nth-child(4) {
   text-align: right;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  font-size: 1.85rem;
+  font-size: 1.55rem;
   letter-spacing: 0.3px;
 }
 
 .tv-table tbody td:nth-child(2) { color: var(--green); }
 .tv-table tbody td:nth-child(3) { color: var(--red); }
+
+.trend-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 1rem;
+}
+
+.trend-up { color: #10b981; }
+.trend-down { color: #ef4444; }
+.trend-equal { color: #6b7280; }
+
+/* Price Trend Animation */
+.price-flash-up { animation: flash-green 1s ease; }
+.price-flash-down { animation: flash-red 1s ease; }
+
+@keyframes flash-green { 0% { background-color: rgba(16, 185, 129, 0.3); } 100% { background-color: transparent; } }
+@keyframes flash-red { 0% { background-color: rgba(239, 68, 68, 0.3); } 100% { background-color: transparent; } }
 
 /* ---- Ticker ---- */
 .ticker-bar {
@@ -587,6 +611,234 @@ body::before {
   background: linear-gradient(90deg, var(--gold), transparent);
 }
 
+/* ---- Hamburger Menü (Masaüstünde Gizli) ---- */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 10px;
+  z-index: 10005; /* En üstte */
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.hamburger-menu span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--gold-dark);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Sidebar Hakkımızda & İletişim Detayları */
+.about-info-card {
+  padding: 10px 16px 15px 48px;
+  color: var(--text-secondary);
+}
+
+.about-info-card h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--gold-dark);
+  margin-bottom: 10px;
+}
+
+.about-info-card p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.sidebar-link .chevron-icon {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+#contact-toggle.active .chevron-icon,
+#about-toggle.active .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.sidebar-sub-menu {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 0 0 12px 12px;
+}
+
+.sidebar-sub-menu.active {
+  max-height: 500px; /* Hakkımızda için daha geniş alan */
+  padding: 10px 0;
+}
+
+.contact-info-card {
+  padding: 10px 16px 10px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.contact-info-item {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.contact-instagram-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e4405f;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.contact-instagram-link,
+.contact-whatsapp-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.contact-instagram-link { color: #e4405f; }
+.contact-whatsapp-link { color: #25d366; }
+
+/* Sidebar Footer (Instagram) */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 20px 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.sidebar-instagram-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+  color: white;
+  text-decoration: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: transform 0.2s;
+  box-shadow: 0 4px 15px rgba(193, 53, 132, 0.2);
+}
+
+.sidebar-instagram-btn:active {
+  transform: scale(0.95);
+}
+
+/* ---- Mobile Sidebar (Drawer) Stilleri ---- */
+.mobile-sidebar-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-sidebar {
+  position: fixed;
+  top: 0; left: -280px;
+  width: 280px;
+  height: 100%;
+  background: var(--bg-card);
+  z-index: 1001;
+  box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-sidebar.active {
+  left: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--gold-dark);
+  margin: 0;
+  flex: 1;
+}
+
+.sidebar-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 500;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.sidebar-link:hover {
+  background: var(--bg-secondary);
+  color: var(--gold-dark);
+}
+
+.sidebar-link svg {
+  opacity: 0.7;
+}
+
+/* ---- Media Query Overwrites ---- */
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: flex;
+  }
+}
+
 /* ---- Eski Satır & Etiketi ---- */
 .row-eski {
   opacity: 0.6;
@@ -635,156 +887,185 @@ body::before {
   vertical-align: middle;
 }
 
+/* Tablo Seperatörü (Eski Sarrafiye Başlığı) */
+.table-separator {
+  background: rgba(184, 148, 31, 0.04) !important;
+}
+
+.table-separator td {
+  padding: 8px 20px !important;
+  text-align: center !important;
+}
+
+.separator-label {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.separator-label::before,
+.separator-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+}
+
+/* ---- Mobil Sekme Navigasyonu (Sadece Mobilde) ---- */
+.mobile-tab-bar {
+  display: none; /* Masaüstünde gizle */
+  background: var(--bg-card);
+  border-bottom: 2px solid var(--border-color-strong);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none; /* Firefox */
+  gap: 10px;
+  padding: 10px 16px;
+}
+
+.mobile-tab-bar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.mobile-tab {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.mobile-tab.active {
+  background: var(--gold);
+  border-color: var(--gold-dark);
+  color: white;
+  box-shadow: 0 4px 10px rgba(184, 148, 31, 0.2);
+}
+
 #section-eski {
-  margin-top: 8px;
+  margin-top: 16px;
   padding: 0 16px;
 }
 
-/* ---- Eski Satır & Etiketi ---- */
 .iban-card {
-  display: flex;
+  width: calc(100% - 32px);
+  max-width: 450px;
+  background: linear-gradient(135deg, #f0f9f6, #e6f2ed);
+  border: 1px solid #c2e2d6;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex !important;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  background: linear-gradient(135deg, rgba(0, 120, 90, 0.08), rgba(0, 80, 60, 0.04));
-  border: 1px solid rgba(0, 120, 90, 0.2);
-  border-radius: var(--radius-lg);
-  padding: 18px 25px;
-  margin: 0 auto;
-  position: relative;
-  overflow: hidden;
+  margin: 10px auto !important;
   text-align: center;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-  max-width: 450px;
-}
-
-.iban-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 120, 90, 0.3), transparent);
-}
-
-.iban-qr-section {
-  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
 .iban-qr-img {
   display: block;
-  border-radius: 8px;
-  border: 2px solid rgba(0, 120, 90, 0.2);
+  width: 200px; /* Netlik için biraz daha büyütüldü */
+  height: auto;
+  padding: 8px;
+  margin: 0 auto;
   background: #fff;
+  border-radius: 12px;
+  border: 1px solid #d1e5dd;
 }
 
 .iban-info-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  width: 100%;
 }
 
 .iban-bank {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-}
-
-.iban-bank-logo {
-  font-size: 1rem;
-}
-
-.iban-bank-name {
-  font-size: 0.75rem;
+  font-family: var(--font-body);
   font-weight: 700;
   color: #0d7a52;
-  letter-spacing: 1px;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.iban-holder {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 0.3px;
+.iban-holder-inline {
+  color: #555;
+  font-weight: 500;
+  text-transform: none;
+  font-size: 0.85rem;
+  letter-spacing: 0;
 }
 
 .iban-row {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(13, 122, 82, 0.1);
+  border-radius: 14px;
+  padding: 16px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
-  flex-wrap: wrap;
 }
 
 .iban-label {
-  font-size: 0.6rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 800;
   color: #0d7a52;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  flex-shrink: 0;
+  letter-spacing: 2px;
 }
 
 .iban-number {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 1px;
   font-family: var(--font-body);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
 }
 
 .iban-copy-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background: rgba(0, 120, 90, 0.08);
-  border: 1px solid rgba(0, 120, 90, 0.2);
+  gap: 6px;
+  background: #f0f9f6;
+  border: 1px solid #0d7a52;
   color: #0d7a52;
-  border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 0.72rem;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-  font-family: var(--font-body);
-  letter-spacing: 0.3px;
+  transition: all 0.2s;
 }
 
 .iban-copy-btn:hover {
-  background: rgba(0, 120, 90, 0.15);
-  border-color: rgba(0, 120, 90, 0.4);
-  transform: translateY(-1px);
+  background: #0d7a52;
+  color: #fff;
 }
 
-.iban-copy-btn.copied {
-  background: rgba(0, 120, 90, 0.18);
-  border-color: #0d7a52;
-  color: #0d7a52;
-}
-
-@media (max-width: 640px) {
-  .iban-card {
-    flex-direction: column;
-    text-align: center;
-    padding: 16px;
-  }
-  .iban-row {
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
-  }
-  .iban-number {
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
-  }
+.iban-copy-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 
@@ -881,6 +1162,7 @@ body::before {
     text-align: center;
     width: 100%;
     margin-bottom: 8px;
+    padding-top: 20px; /* Burger'e yer aç */
   }
 
   .header-title {
@@ -901,6 +1183,35 @@ body::before {
   .tv-table thead th:nth-child(2),
   .tv-table thead th:nth-child(3) {
     width: 30%;
+  }
+  /* Mobilde tab içeriği yönetimi */
+  .mobile-tab-bar {
+    display: flex;
+  }
+
+  .mobile-tab-content {
+    display: none !important;
+  }
+
+  .mobile-tab-content.active {
+    display: block !important;
+  }
+
+  /* Mobil Izgara Ayarı */
+  .tv-grid {
+    grid-template-columns: 1fr;
+    display: block; 
+  }
+
+  .tv-right-col {
+    display: contents; 
+  }
+}
+
+/* Masaüstünde (TV) 'Altın' bölümünü gizle, IBAN yukarı çıksın */
+@media (min-width: 769px) {
+  #tab-altin {
+    display: none !important;
   }
 }
 
