@@ -213,10 +213,14 @@ function renderTable(tableBody, codes, isEskiSection) {
     const isEski = CONFIG.ESKI_SET.has(code);
     const isSarrafiye = CONFIG.ZIYNET_CODES.includes(code) || CONFIG.ESKI_CODES.includes(code);
 
-    let apiAlis = item ? parseTurkishNumber(item.Alis) : 0;
-    let apiSatis = item ? parseTurkishNumber(item.Satis) : 0;
+    // Ağırlıkla çarp (Gram ürünleri için weight kullanılır, sarrafiye için genelde 1)
+    let baseAlis = item ? parseTurkishNumber(item.Alis) : 0;
+    let baseSatis = item ? parseTurkishNumber(item.Satis) : 0;
     
-    // Sarrafiye Alış/Satış Düzeltmeleri
+    apiAlis = baseAlis > 0 ? (baseAlis * weight) : 0;
+    apiSatis = baseSatis > 0 ? (baseSatis * weight) : 0;
+
+    // Sarrafiye Alış/Satış Düzeltmeleri (Ağırlık sonrası uygulanıyor)
     if (code === 'C' || code === 'EC') {
       if (apiAlis > 0) apiAlis += 100;
       if (apiSatis > 0) apiSatis -= 100;
@@ -240,14 +244,6 @@ function renderTable(tableBody, codes, isEskiSection) {
 
     const useItem = item;
     if (!useItem) return; // Veri bulunamadı
-    
-    // Fiyatları çek
-    let rawAlis = parseTurkishNumber(useItem.Alis);
-    let rawSatis = parseTurkishNumber(useItem.Satis);
-
-    // Ağırlıkla çarp
-    apiAlis = rawAlis > 0 ? (rawAlis * weight) : 0;
-    apiSatis = rawSatis > 0 ? (rawSatis * weight) : 0;
     
     // Alış hesapla
     let alisStr;
