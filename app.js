@@ -230,7 +230,7 @@ function renderTable(tableBody, codes, isEskiSection) {
       if (apiSatis > 0) apiSatis -= 200;
     }
     if (code === 'T' || code === 'ET') {
-      if (apiAlis > 0) apiAlis += 500;
+      if (apiAlis > 0) apiAlis += 750;
       if (apiSatis > 0) apiSatis -= 100;
     }
     if (code === 'G' || code === 'EG') {
@@ -239,7 +239,7 @@ function renderTable(tableBody, codes, isEskiSection) {
     }
     if (code === 'A') {
       if (apiAlis > 0) apiAlis += 270;
-      if (apiSatis > 0) apiSatis -= 300;
+      if (apiSatis > 0) apiSatis -= 200;
     }
 
     const useItem = item;
