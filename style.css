@@ -1210,14 +1210,10 @@ body::before {
   }
 
   /* Tablo sütun oranlarını mobilde ayarla (4 kolonlu yapı) */
-  .tv-table thead th:nth-child(1) { width: 34%; }
-  .tv-table thead th:nth-child(2),
-  .tv-table thead th:nth-child(3) {
-    width: 26%;
-  }
-  .tv-table thead th:nth-child(4) {
-    width: 14%;
-  }
+  .tv-table thead th:nth-child(1) { width: 30%; }
+  .tv-table thead th:nth-child(2) { width: 28%; }
+  .tv-table thead th:nth-child(3) { width: 32%; }
+  .tv-table thead th:nth-child(4) { width: 10%; }
 
   /* Mobil tab bar yazılarını biraz küçült (sığması için) */
   .mobile-tab {
