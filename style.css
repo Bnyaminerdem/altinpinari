@@ -1127,13 +1127,14 @@ body::before {
 
   /* Yazı boyutlarını küçült (fiyatlar birbirine girmesin) */
   .tv-table tbody td {
-    padding: 8px 10px;
-    font-size: 0.95rem; 
+    padding: 8px 4px;
+    font-size: 0.90rem; 
   }
 
   .tv-table tbody td:nth-child(2),
-  .tv-table tbody td:nth-child(3) {
-    font-size: 1rem;
+  .tv-table tbody td:nth-child(3),
+  .tv-table tbody td:nth-child(4) {
+    font-size: 0.95rem;
   }
 
   .tv-section-title {
@@ -1178,11 +1179,20 @@ body::before {
     padding: 0 8px;
   }
 
-  /* Tablo sütun oranlarını mobilde ayarla */
-  .tv-table thead th:nth-child(1) { width: 40%; }
+  /* Tablo sütun oranlarını mobilde ayarla (4 kolonlu yapı) */
+  .tv-table thead th:nth-child(1) { width: 34%; }
   .tv-table thead th:nth-child(2),
   .tv-table thead th:nth-child(3) {
-    width: 30%;
+    width: 26%;
+  }
+  .tv-table thead th:nth-child(4) {
+    width: 14%;
+  }
+
+  /* Mobil tab bar yazılarını biraz küçült (sığması için) */
+  .mobile-tab {
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
   /* Mobilde tab içeriği yönetimi */
   .mobile-tab-bar {
