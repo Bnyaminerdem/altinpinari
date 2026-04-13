@@ -235,7 +235,7 @@ function renderTable(tableBody, codes, isEskiSection) {
     }
     if (code === 'G' || code === 'EG') {
       if (apiAlis > 0) apiAlis += 700;
-      if (apiSatis > 0) apiSatis += 5200;
+      if (apiSatis > 0) apiSatis += 200;
     }
     if (code === 'A') {
       if (apiAlis > 0) apiAlis += 270;
