@@ -9,7 +9,7 @@ const CONFIG = {
   SATIS_MARKUP: 20,
 
   // Otomatik güncelleme aralığı (ms)
-  REFRESH_INTERVAL: 30000,
+  REFRESH_INTERVAL: 10000,
 
   // API
   API_GOLD: 'https://altin-fiyat-proxy.yasireminciftci.workers.dev',
