@@ -176,7 +176,11 @@ function renderTable(tableBody, codes, isEskiSection) {
   let count = 0;
   let hasShownEskiSeparator = false;
 
-  codes.forEach(code => {
+  // PC/TV ekranında 50g ve 100g'ı göstermiyoruz (alan tasarrufu)
+  const isDesktop = window.innerWidth >= 769;
+  const filteredCodes = isDesktop ? codes.filter(c => c !== 'G50' && c !== 'G100') : codes;
+
+  filteredCodes.forEach(code => {
     // 0. ESKİ Grubu için Ayırıcı (Eski sarrafiyeler başlıyorsa)
     if (CONFIG.ESKI_SET.has(code) && !hasShownEskiSeparator) {
       html += `
@@ -222,16 +226,16 @@ function renderTable(tableBody, codes, isEskiSection) {
 
     // Sarrafiye Alış/Satış Düzeltmeleri (Ağırlık sonrası uygulanıyor)
     if (code === 'C' || code === 'EC') {
-      if (apiAlis > 0) apiAlis += 100;
-      if (apiSatis > 0) apiSatis -= 100;
+      if (apiAlis > 0) apiAlis += 40;
+      if (apiSatis > 0) apiSatis -= 70;
     }
     if (code === 'Y' || code === 'EY') {
       if (apiAlis > 0) apiAlis += 250;
-      if (apiSatis > 0) apiSatis -= 200;
+      if (apiSatis > 0) apiSatis -= 250;
     }
     if (code === 'T' || code === 'ET') {
-      if (apiAlis > 0) apiAlis += 750;
-      if (apiSatis > 0) apiSatis -= 100;
+      if (apiAlis > 0) apiAlis += 320;
+      if (apiSatis > 0) apiSatis -= 360;
     }
     if (code === 'G' || code === 'EG') {
       if (apiAlis > 0) apiAlis += 700;
@@ -293,33 +297,45 @@ function renderTable(tableBody, codes, isEskiSection) {
     let trendClass = 'trend-equal';
     let arrowSVG = '';
 
-    if (trendValue > 0) {
+    // Trend Belirleme (API veya Fiyat Değişimi)
+    let finalTrend = trendValue;
+    const prev = previousPrices[code];
+    let changeClass = '';
+
+    if (prev) {
+      const prevSatis = parseTurkishNumber(prev.satis || '0');
+      const currentSatis = parseTurkishNumber(satisStr); // Hesaplanan nihai fiyat
+      
+      if (currentSatis > prevSatis) {
+        finalTrend = 1;
+        changeClass = 'price-flash-up';
+      } else if (currentSatis < prevSatis) {
+        finalTrend = -1;
+        changeClass = 'price-flash-down';
+      }
+    }
+
+    if (finalTrend > 0) {
       trendClass = 'trend-up';
-      arrowSVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
-    } else if (trendValue < 0) {
+      arrowSVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
+    } else if (finalTrend < 0) {
       trendClass = 'trend-down';
-      arrowSVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+      arrowSVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+    } else {
+      trendClass = 'trend-equal';
+      arrowSVG = ''; // Henüz değişim yoksa boş kalsın
     }
     trendHTML = `<div class="trend-indicator ${trendClass}">${arrowSVG}</div>`;
 
-
-    // Fiyat değişimi kontrolü (Renkli Flash için)
-    const prev = previousPrices[code];
-    let changeClass = '';
-    
-    if (prev) {
-      const prevSatis = parseTurkishNumber(prev.satis || '0');
-      const currentSatis = parseTurkishNumber(useItem.Satis || '0');
-      
-      if (currentSatis > prevSatis) changeClass = 'price-flash-up';
-      else if (currentSatis < prevSatis) changeClass = 'price-flash-down';
-      else if (prev.alis !== useItem.Alis || prev.satis !== useItem.Satis) changeClass = 'price-flash';
-    }
+    let textClass = '';
+    if (finalTrend > 0) textClass = 'text-up';
+    else if (finalTrend < 0) textClass = 'text-down';
 
     count++;
 
     let rowClass = changeClass;
     if (isEskiSection) rowClass += ' row-eski';
+    if (code === 'G50' || code === 'G100' || code === 'R' || code === 'A5') rowClass += ' tv-hide';
 
     // Eski sarrafiye için etiket
     let tagHTML = '';
@@ -330,9 +346,13 @@ function renderTable(tableBody, codes, isEskiSection) {
         <td>
           <span class="product-name">${displayName}${tagHTML}</span>
         </td>
-        <td>${alisStr}</td>
-        <td>${satisStr}</td>
-        <td>${trendHTML}</td>
+        <td class="${textClass}">${alisStr}</td>
+        <td>
+          <div class="price-with-trend ${textClass}">
+            ${satisStr}
+            ${trendHTML}
+          </div>
+        </td>
       </tr>
     `;
   });
@@ -516,6 +536,64 @@ function setupSidebar() {
 }
 
 
+// ---- Ekran Kontrolleri (Gece Modu & TV Modu - 4 Kademeli Boyut) ----
+function setupDisplayControls() {
+  const nightBtn = document.getElementById('night-mode-toggle');
+  const tvBtn = document.getElementById('tv-mode-toggle');
+  const moonIcon = document.getElementById('moon-icon');
+  const sunIcon = document.getElementById('sun-icon');
+
+  // Kayıtlı tercihleri yükle
+  const isDarkMode = localStorage.getItem('nightMode') === 'true';
+  const tvScaleMode = localStorage.getItem('tvScaleMode') || 'large'; // xlarge, large, medium, compact
+
+  if (isDarkMode) {
+    document.body.classList.add('dark-mode');
+    if (moonIcon) moonIcon.style.display = 'none';
+    if (sunIcon) sunIcon.style.display = 'block';
+  }
+
+  // TV Modu Sınıflarını Uygula
+  applyTvScaleClass(tvScaleMode);
+
+  if (nightBtn) {
+    nightBtn.addEventListener('click', () => {
+      const active = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('nightMode', active);
+      
+      if (moonIcon && sunIcon) {
+        if (active) {
+          moonIcon.style.display = 'none';
+          sunIcon.style.display = 'block';
+        } else {
+          moonIcon.style.display = 'block';
+          sunIcon.style.display = 'none';
+        }
+      }
+    });
+  }
+
+  if (tvBtn) {
+    tvBtn.addEventListener('click', () => {
+      let currentMode = localStorage.getItem('tvScaleMode') || 'large';
+      let nextMode = 'medium';
+      
+      if (currentMode === 'large') nextMode = 'medium';
+      else if (currentMode === 'medium') nextMode = 'compact';
+      else nextMode = 'large';
+
+      localStorage.setItem('tvScaleMode', nextMode);
+      applyTvScaleClass(nextMode);
+    });
+  }
+}
+
+function applyTvScaleClass(mode) {
+  document.body.classList.remove('tv-mode-large', 'tv-mode-medium', 'tv-mode-compact');
+  document.body.classList.add(`tv-mode-${mode}`);
+}
+
+
 // ---- Init ----
 async function init() {
   // DOM elemanlarını bul (DOMContentLoaded sonrası)
@@ -544,6 +622,9 @@ async function init() {
 
   // Sidebar ayarla
   setupSidebar();
+
+  // Ekran kontrollerini ayarla
+  setupDisplayControls();
 
   // İlk yükleme skeletonları
   renderSkeletons();

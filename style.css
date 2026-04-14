@@ -49,6 +49,32 @@
   --transition-slow: 0.5s ease;
 }
 
+/* ---- Dark Mode Variables ---- */
+body.dark-mode {
+  --bg-primary: #0f1012;
+  --bg-secondary: #1a1c1e;
+  --bg-card: #141517;
+  --bg-table-row: #181a1c;
+  --bg-table-row-alt: #16181a;
+  --bg-table-hover: #1f2225;
+
+  --gold-dark: #d4a843;
+  --gold: #b8941f;
+  --gold-light: #e6c975;
+  --gold-glow: rgba(184, 148, 31, 0.12);
+  --gold-glow-strong: rgba(184, 148, 31, 0.25);
+
+  --text-primary: #f0f0f0;
+  --text-secondary: #c0c0c0;
+  --text-muted: #888888;
+
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color-strong: rgba(184, 148, 31, 0.35);
+
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-gold: 0 0 25px rgba(184, 148, 31, 0.1);
+}
+
 /* ---- Reset & Base ---- */
 *,
 *::before,
@@ -320,16 +346,36 @@ body::before {
 .tv-table tbody td:nth-child(3) { color: var(--red); }
 
 .trend-indicator {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  font-size: 1rem;
+  justify-content: center;
+  margin-left: 8px;
+  vertical-align: middle;
 }
 
-.trend-up { color: #10b981; }
-.trend-down { color: #ef4444; }
-.trend-equal { color: #6b7280; }
+.price-with-trend {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  transition: all 0.4s ease;
+}
+
+/* Standart Fiyat Rengi (Aydınlık Mod) */
+.tv-table tbody td { color: #1a1a1a; }
+
+/* Fiyat Değişim Renkleri (Hem Aydınlık Hem Karanlıkta çalışır) */
+.text-up { color: #10b981 !important; font-weight: 800; }
+.text-down { color: #ef4444 !important; font-weight: 800; }
+
+.trend-up { color: inherit; opacity: 0.9; }
+.trend-down { color: inherit; opacity: 0.9; }
+.trend-equal { display: none; }
+
+/* Karanlık Mod Özelleştirmeleri */
+body.dark-mode .tv-table tbody td { color: #ffffff; }
+body.dark-mode .text-up { color: #00ff88 !important; text-shadow: 0 0 10px rgba(0, 255, 136, 0.4); }
+body.dark-mode .text-down { color: #ff5555 !important; text-shadow: 0 0 10px rgba(255, 85, 85, 0.4); }
 
 /* Price Trend Animation */
 .price-flash-up { animation: flash-green 1s ease; }
@@ -432,7 +478,42 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: 8px;
+}
+
+.display-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.header-control-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--gold-dark);
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.header-control-btn:hover {
+  background: var(--gold-glow);
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(184, 148, 31, 0.1);
+}
+
+.header-control-btn svg {
+  stroke: var(--gold-dark);
+}
+
+body.dark-mode .header-control-btn {
+  background: #1f2124;
 }
 
 .live-clock {
@@ -976,26 +1057,26 @@ body::before {
 }
 
 .iban-card {
-  width: calc(100% - 32px);
-  max-width: 450px;
+  width: auto;
+  max-width: 500px;
   background: linear-gradient(135deg, #f0f9f6, #e6f2ed);
   border: 1px solid #c2e2d6;
   border-radius: 20px;
-  padding: 24px;
+  padding: 20px 25px;
   display: flex !important;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  margin: 10px auto !important;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  gap: 25px;
+  margin: 20px auto !important;
+  text-align: left;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.04);
 }
 
 .iban-qr-img {
   display: block;
-  width: 200px; /* Netlik için biraz daha büyütüldü */
-  height: auto;
+  width: 120px;
+  height: 120px;
   padding: 8px;
-  margin: 0 auto;
   background: #fff;
   border-radius: 12px;
   border: 1px solid #d1e5dd;
@@ -1116,8 +1197,167 @@ body::before {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+/* ---- Section Brand Small (Görseldeki Yatay Logo) ---- */
+.section-brand-small {
+  display: none; /* Varsayılan gizli */
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 5px 0;
+}
 
-/* ---- Responsive ---- */
+.brand-small-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  background: #111; /* Siyah yuvarlak zemin */
+  border-radius: 50%;
+  padding: 4px;
+}
+
+.brand-small-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brand-small-name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--gold); /* Görseldeki altın sarısı */
+  letter-spacing: 0.2px;
+}
+
+.brand-small-sub {
+  font-family: var(--font-body);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: #7a7a7a; /* Görseldeki gri ton */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 2px;
+}
+
+/* TV Modu Görünürlük Kuralları */
+@media (min-width: 769px) {
+  body.tv-mode-medium .section-brand-small,
+  body.tv-mode-compact .section-brand-small {
+    display: flex;
+  }
+}
+
+/* ---- TV Kademeli Boyutlandırma (XLarge, Large, Medium, Compact) ---- */
+@media (min-width: 769px) {
+  body.tv-mode-medium,
+  body.tv-mode-compact {
+    background: var(--bg-secondary);
+  }
+
+  /* XLarge Mode (Ekstra Büyük - Maksimum Okunabilirlik) */
+  body.tv-mode-xlarge .tv-main {
+    max-width: 100%;
+    margin: 0;
+    padding: 10px 16px;
+  }
+
+  /* Compact Mode (En Küçük - Çok Boşluklu) */
+  body.tv-mode-compact .tv-main {
+    max-width: 86%;
+    margin: 40px auto;
+    background: var(--bg-card);
+    border-radius: 30px;
+    padding: 50px 60px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.15);
+    border: 1px solid var(--border-color-strong);
+    flex: none;
+  }
+
+  /* Medium Mode (Orta Boyut) */
+  body.tv-mode-medium .tv-main {
+    max-width: 95%;
+    margin: 20px auto;
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 25px 35px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    border: 1px solid var(--border-color-strong);
+  }
+
+  /* Büyük (Large): Ayarlar */
+  body.tv-mode-large .tv-main { max-width: 100%; margin: 0; padding: 10px 16px; }
+  body.tv-mode-large .tv-grid { gap: 24px; }
+  body.tv-mode-large .tv-table tbody td { font-size: 1.35rem; padding: 10px 18px; }
+
+  /* Orta (Medium) & Normal (Compact): Ayarlar */
+  .tv-grid { gap: 24px; }
+  body.tv-mode-compact .tv-grid { gap: 50px; }
+  body.tv-mode-medium .tv-grid { gap: 35px; }
+
+  /* Fiyat Boyutları */
+  body.tv-mode-compact .tv-table tbody td { font-size: 1.6rem; padding: 15px 25px; }
+  body.tv-mode-medium .tv-table tbody td { font-size: 1.45rem; padding: 12px 20px; }
+
+  /* -- TV MODU IBAN AYARLARI (DOLGUN) -- */
+  body.tv-mode-large .iban-card,
+  body.tv-mode-medium .iban-card,
+  body.tv-mode-compact .iban-card {
+    max-width: 100% !important;
+    margin: 20px auto !important;
+    padding: 30px 40px !important;
+    flex-direction: row !important;
+    gap: 30px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.08) !important;
+  }
+
+  body.tv-mode-large .iban-qr-img { width: 200px !important; height: 200px !important; }
+  body.tv-mode-medium .iban-qr-img { width: 185px !important; height: 185px !important; }
+  body.tv-mode-compact .iban-qr-img { width: 175px !important; height: 175px !important; }
+
+  body.tv-mode-large .iban-number { font-size: 2.2rem !important; }
+  body.tv-mode-medium .iban-number { font-size: 2.0rem !important; }
+  body.tv-mode-compact .iban-number { font-size: 1.85rem !important; }
+  
+  body.tv-mode-large .iban-copy-btn,
+  body.tv-mode-medium .iban-copy-btn,
+  body.tv-mode-compact .iban-copy-btn { 
+    padding: 10px 20px !important; 
+    font-size: 1rem !important; 
+  }
+
+  /* -- HEADER İNCELTME AYARLARI -- */
+  body.tv-mode-large .header { padding: 8px 16px !important; }
+  body.tv-mode-large .header-logo { width: 48px !important; height: 48px !important; }
+  body.tv-mode-large .header-title { font-size: 2.2rem !important; }
+  body.tv-mode-large .live-clock { font-size: 2.1rem !important; }
+
+  body.tv-mode-medium .header { padding: 6px 14px !important; }
+  body.tv-mode-medium .header-logo { width: 34px !important; height: 34px !important; }
+  body.tv-mode-medium .header-title { font-size: 1.5rem !important; }
+  body.tv-mode-medium .live-clock { font-size: 1.4rem !important; }
+
+  body.tv-mode-compact .header { padding: 4px 12px !important; }
+  body.tv-mode-compact .header-logo { width: 28px !important; height: 28px !important; }
+  body.tv-mode-compact .header-title { font-size: 1.25rem !important; }
+  body.tv-mode-compact .live-clock { font-size: 1.2rem !important; }
+} /* Media query kapatma parantezi */
+
+/* Dark Mode Adjustments for IBAN & Other Cards */
+body.dark-mode .iban-card {
+  background: linear-gradient(135deg, #1a2a24, #141f1b);
+  border-color: #2D4F42;
+}
+
+body.dark-mode .iban-bank { color: #4ade80; }
+body.dark-mode .iban-label { color: #4ade80; }
+body.dark-mode .iban-number { color: #f0f0f0; }
+body.dark-mode .iban-copy-btn { background: #141f1b; border-color: #4ade80; color: #4ade80; }
+body.dark-mode .iban-row { background: rgba(0, 0, 0, 0.2); border-color: rgba(74, 222, 128, 0.1); }
+body.dark-mode .iban-holder-inline { color: #888; }
+body.dark-mode .tv-table thead th { background: linear-gradient(180deg, #1a1c1e 0%, #141517 100%); }
+body.dark-mode .mobile-tab-bar { background: #141517; }
+body.dark-mode .mobile-tab { background: #1f2124; color: #888; border-color: #333; }
 /* ---- Responsive (Mobil Uyumluluk) ---- */
 @media (max-width: 768px) {
   .tv-main {
@@ -1168,6 +1408,22 @@ body::before {
   .header-right {
     align-items: center;
     width: 100%;
+  }
+
+  .display-controls {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    margin: 0;
+    z-index: 10002;
+  }
+
+  #night-mode-toggle {
+    display: flex !important;
+  }
+
+  #tv-mode-toggle {
+    display: none;
   }
 
   .header-brand {
@@ -1251,6 +1507,19 @@ body::before {
   }
 }
 
+/* PC/TV: 50g ve 100g'ı kesin olarak gizle (Sadece mobilde görünür) */
+tr[data-code="G50"], 
+tr[data-code="G100"] {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  tr[data-code="G50"], 
+  tr[data-code="G100"] {
+    display: table-row !important;
+  }
+}
+
 /* Tablet / Orta Ekranlar */
 @media (min-width: 769px) and (max-width: 1200px) {
   .tv-table tbody td {
@@ -1286,4 +1555,11 @@ body::before {
 ::selection {
   background: var(--gold);
   color: #fff;
+}
+
+/* TV Visibility Helper */
+@media (min-width: 769px) {
+  .tv-hide {
+    display: none !important;
+  }
 }
