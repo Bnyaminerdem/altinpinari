@@ -281,9 +281,8 @@ function renderTable(tableBody, codes, isEskiSection) {
     const fbAdj = CONFIG.FIREBASE_ADJUSTMENTS[code];
     
     if (fbAdj) {
-      // Firebase'den gelen manuel değerleri ekle
-      if (apiAlis > 0) apiAlis += (parseFloat(fbAdj.alis) || 0);
-      if (apiSatis > 0) apiSatis += (parseFloat(fbAdj.satis) || 0);
+      // Firebase'den gelen manuel değerler varsa legacy düzeltmeleri atla
+      // (Düzeltme aşağıda alisVal ve satisVal'a eklenecek, burada tekrar eklemiyoruz)
     } else {
       // Varsayılan / Legacy Düzeltmeler (Statik)
       if (code === 'C' || code === 'EC') {
