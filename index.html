@@ -7,6 +7,9 @@
   <title>Altın Pınarı Kuyumculuk | Güncel Altın Fiyatları</title>
   <link rel="icon" href="logo.png" type="image/png">
   <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -15,6 +18,18 @@
     <img src="logo.png" alt="Logo" class="loading-logo">
     <div class="loading-text">ALTIN PINARI</div>
     <div class="loading-bar"></div>
+  </div>
+
+  <!-- Bakım Modu Ekranı -->
+  <div class="maintenance-overlay hidden" id="maintenance-overlay">
+    <div class="maintenance-content">
+      <img src="logo.png" alt="Logo" class="maintenance-logo">
+      <h1>Bakım Çalışması</h1>
+      <p>Sizlere daha iyi hizmet verebilmek için sitemiz şu an bakımdadır. Kısa süre sonra tekrar görüşmek üzere.</p>
+      <div class="maintenance-contact">
+        <strong>İletişim:</strong> (0312) 359 49 59
+      </div>
+    </div>
   </div>
 
 

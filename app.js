@@ -3,10 +3,54 @@
    Altınkaynak API'den fiyat çekme + kâr marjı
    ============================================ */
 
+// --- FIREBASE CONFIG (Yönetim panelindeki ile aynı olmalı) ---
+const firebaseConfig = {
+  apiKey: "AIzaSyBlNarV8jgQ2RK1QDxn0mj4XxhTyk2Zf_8",
+  authDomain: "altinpinari-panel.firebaseapp.com",
+  databaseURL: "https://altinpinari-panel-default-rtdb.firebaseio.com",
+  projectId: "altinpinari-panel",
+  storageBucket: "altinpinari-panel.firebasestorage.app",
+  messagingSenderId: "956494971184",
+  appId: "1:956494971184:web:be9364217e1f6be4d2c8f5",
+  measurementId: "G-N90R7RKCFP"
+};
+
+// Initialize Firebase
+if (typeof firebase !== 'undefined') {
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  
+  // Canlı Ayarları Dinle
+  db.ref('config').on('value', snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      if (data.satisMarkup !== undefined) CONFIG.SATIS_MARKUP = data.satisMarkup;
+      if (data.satisAdjustment) {
+        // Mevcut düzeltmeleri koru ama yenileriyle güncelle/ekle
+        Object.assign(CONFIG.SATIS_ADJUSTMENT, data.satisAdjustment);
+      }
+      
+      // Bakım Modu Kontrolü
+      const maintenanceOverlay = document.getElementById('maintenance-overlay');
+      if (maintenanceOverlay) {
+        if (data.maintenanceMode) maintenanceOverlay.classList.remove('hidden');
+        else maintenanceOverlay.classList.add('hidden');
+      }
+
+      // Fiyatları yeniden hesapla ve tabloları güncelle
+      if (goldData.length > 0) {
+        renderAllTables();
+      }
+    }
+  });
+}
+
+
 // ---- Ayarlar (Kolayca Değiştirilebilir) ----
 const CONFIG = {
-  // Satış fiyatlarına eklenen kâr marjı (TL)
+  // Satış fiyatlarına eklenen kâr marjı (TL) - Admin panelinden değiştirilebilir
   SATIS_MARKUP: 20,
+
 
   // Otomatik güncelleme aralığı (ms)
   REFRESH_INTERVAL: 10000,
