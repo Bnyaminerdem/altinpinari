@@ -74,7 +74,10 @@ const CONFIG = {
     'G20': '24 Ayar 20 Gram',
     'G50': '24 Ayar 50 Gram',
     'G100': '24 Ayar 100 Gram'
-  }
+  },
+  
+  // Firebase'den gelen canlı düzeltmeler
+  FIREBASE_ADJUSTMENTS: {}
 };
 
 // Initialize Firebase (CONFIG tanımlandıktan sonra başlatılıyor)
@@ -86,7 +89,14 @@ if (typeof firebase !== 'undefined') {
   db.ref('config').on('value', snapshot => {
     const data = snapshot.val();
     if (data) {
-      if (data.satisMarkup !== undefined) CONFIG.SATIS_MARKUP = data.satisMarkup;
+      if (data.satisMarkup !== undefined) CONFIG.SATIS_MARKUP = parseFloat(data.satisMarkup);
+      
+      // Canlı Adjustments (Alış ve Satış)
+      if (data.adjustments) {
+        CONFIG.FIREBASE_ADJUSTMENTS = data.adjustments;
+      }
+
+      // legacy/manuel satisAdjustment sync
       if (data.satisAdjustment) {
         Object.assign(CONFIG.SATIS_ADJUSTMENT, data.satisAdjustment);
       }
@@ -260,26 +270,35 @@ function renderTable(tableBody, codes, isEskiSection) {
     let apiAlis = baseAlis > 0 ? (baseAlis * weight) : 0;
     let apiSatis = baseSatis > 0 ? (baseSatis * weight) : 0;
 
-    // Sarrafiye Alış/Satış Düzeltmeleri (Ağırlık sonrası uygulanıyor)
-    if (code === 'C' || code === 'EC') {
-      if (apiAlis > 0) apiAlis += 40;
-      if (apiSatis > 0) apiSatis -= 50; // Önceden -70 idi, 20 TL eklendi
-    }
-    if (code === 'Y' || code === 'EY') {
-      if (apiAlis > 0) apiAlis += 250;
-      if (apiSatis > 0) apiSatis -= 250;
-    }
-    if (code === 'T' || code === 'ET') {
-      if (apiAlis > 0) apiAlis += 320;
-      if (apiSatis > 0) apiSatis -= 360;
-    }
-    if (code === 'G' || code === 'EG') {
-      if (apiAlis > 0) apiAlis += 700;
-      if (apiSatis > 0) apiSatis -= 1000;
-    }
-    if (code === 'A') {
-      if (apiAlis > 0) apiAlis += 270;
-      if (apiSatis > 0) apiSatis -= 200;
+    // 2. Canlı Firebase Düzeltmeleri veya Varsayılanlar uygulama
+    const fbAdj = CONFIG.FIREBASE_ADJUSTMENTS[code];
+    
+    if (fbAdj) {
+      // Firebase'den gelen manuel değerleri ekle
+      if (apiAlis > 0) apiAlis += (parseFloat(fbAdj.alis) || 0);
+      if (apiSatis > 0) apiSatis += (parseFloat(fbAdj.satis) || 0);
+    } else {
+      // Varsayılan / Legacy Düzeltmeler (Statik)
+      if (code === 'C' || code === 'EC') {
+        if (apiAlis > 0) apiAlis += 40;
+        if (apiSatis > 0) apiSatis -= 50;
+      }
+      if (code === 'Y' || code === 'EY') {
+        if (apiAlis > 0) apiAlis += 250;
+        if (apiSatis > 0) apiSatis -= 250;
+      }
+      if (code === 'T' || code === 'ET') {
+        if (apiAlis > 0) apiAlis += 320;
+        if (apiSatis > 0) apiSatis -= 360;
+      }
+      if (code === 'G' || code === 'EG') {
+        if (apiAlis > 0) apiAlis += 700;
+        if (apiSatis > 0) apiSatis -= 1000;
+      }
+      if (code === 'A') {
+        if (apiAlis > 0) apiAlis += 270;
+        if (apiSatis > 0) apiSatis -= 200;
+      }
     }
 
     const useItem = item;
