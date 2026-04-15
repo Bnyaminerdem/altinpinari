@@ -7,7 +7,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyBlNarV8jgQ2RK1QDxn0mj4XxhTyk2Zf_8",
   authDomain: "altinpinari-panel.firebaseapp.com",
-  databaseURL: "https://altinpinari-panel-default-rtdb.firebaseio.com",
+  databaseURL: "https://altinpinari-panel-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "altinpinari-panel",
   storageBucket: "altinpinari-panel.firebasestorage.app",
   messagingSenderId: "956494971184",
