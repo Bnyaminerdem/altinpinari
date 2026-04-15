@@ -88,12 +88,17 @@ if (typeof firebase !== 'undefined') {
   // Canlı Ayarları Dinle
   db.ref('config').on('value', snapshot => {
     const data = snapshot.val();
+    console.log("Firebase verisi alındı:", data);
     if (data) {
-      if (data.satisMarkup !== undefined) CONFIG.SATIS_MARKUP = parseFloat(data.satisMarkup);
+      if (data.satisMarkup !== undefined) {
+        CONFIG.SATIS_MARKUP = parseFloat(data.satisMarkup);
+        console.log("SATIS_MARKUP güncellendi:", CONFIG.SATIS_MARKUP);
+      }
       
       // Canlı Adjustments (Alış ve Satış)
       if (data.adjustments) {
         CONFIG.FIREBASE_ADJUSTMENTS = data.adjustments;
+        console.log("Adjustments güncellendi:", data.adjustments);
       }
 
       // legacy/manuel satisAdjustment sync
@@ -105,9 +110,11 @@ if (typeof firebase !== 'undefined') {
       const maintenanceOverlay = document.getElementById('maintenance-overlay');
       if (maintenanceOverlay) {
         if (data.maintenanceMode) {
+          console.log("BAKIM MODU: AÇIK");
           maintenanceOverlay.classList.remove('hidden');
           document.body.classList.add('maintenance-active');
         } else {
+          console.log("BAKIM MODU: KAPALI");
           maintenanceOverlay.classList.add('hidden');
           document.body.classList.remove('maintenance-active');
         }
@@ -304,48 +311,52 @@ function renderTable(tableBody, codes, isEskiSection) {
     const useItem = item;
     if (!useItem) return; // Veri bulunamadı
     
-    // Alış hesapla
-    let alisStr;
+    // 1. Alış hesapla (Raw)
+    let alisVal = 0;
     if (CONFIG.GRAM_CODES.includes(code)) {
-      // GRAM ALTIN: Ham fiyat, hiçbir ekleme/çıkarma yok
-      alisStr = apiAlis === 0 ? '-' : formatTurkishNumber(apiAlis);
+      alisVal = apiAlis;
     } else if (isSarrafiye) {
-      alisStr = apiAlis === 0 ? '-' : formatTurkishNumber(apiAlis);
+      alisVal = apiAlis;
     } else if (code === 'B') {
       const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || dataMap['HAS']?.Alis || '0');
-      alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.912);
+      alisVal = hasAlis * 0.912;
     } else if (code === '14') {
       const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
-      alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.550);
+      alisVal = hasAlis * 0.550;
     } else if (code === '18') {
       const hasAlis = parseTurkishNumber(dataMap['HH_T']?.Alis || '0');
-      alisStr = hasAlis === 0 ? '-' : formatTurkishNumber(hasAlis * 0.700);
+      alisVal = hasAlis * 0.700;
     } else {
       const adj = (CONFIG.ALIS_ADJUSTMENT && CONFIG.ALIS_ADJUSTMENT[code]) || 0;
-      alisStr = apiAlis === 0 ? '-' : formatTurkishNumber(apiAlis + adj);
+      alisVal = apiAlis + adj;
     }
 
-    // Satış hesapla
-    let satisStr;
+    // Alış'a Firebase Ayarını Uygula (Son Adım)
+    if (fbAdj && alisVal > 0) alisVal += (parseFloat(fbAdj.alis) || 0);
+    const alisStr = alisVal === 0 ? '-' : formatTurkishNumber(alisVal);
+
+    // 2. Satış hesapla (Raw)
+    let satisVal = 0;
     if (CONFIG.GRAM_CODES.includes(code)) {
-      // GRAM ALTIN: Gram başına 10 TL ekle
-      const finalPrice = apiSatis > 0 ? (apiSatis + (10 * weight)) : 0;
-      satisStr = finalPrice === 0 ? '-' : formatTurkishNumber(finalPrice);
+      satisVal = apiSatis > 0 ? (apiSatis + (10 * weight)) : 0;
     } else if (isSarrafiye) {
-      satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis);
+      satisVal = apiSatis;
     } else if (code === 'B') {
       const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || dataMap['HAS']?.Satis || '0');
-      satisStr = hasSatis === 0 ? '-' : formatTurkishNumber(hasSatis * 0.928);
+      satisVal = hasSatis * 0.928;
     } else if (code === '14') {
       const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || '0');
-      satisStr = hasSatis === 0 ? '-' : formatTurkishNumber(hasSatis * 0.650);
+      satisVal = hasSatis * 0.650;
     } else if (code === '18') {
-      // 18 Ayar Satış: API'den çekilenin aynısı (raw apiSatis)
-      satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis);
+      satisVal = apiSatis;
     } else {
       const satisAdj = (CONFIG.SATIS_ADJUSTMENT && CONFIG.SATIS_ADJUSTMENT[code]) || 0;
-      satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis + CONFIG.SATIS_MARKUP + satisAdj);
+      satisVal = apiSatis + CONFIG.SATIS_MARKUP + satisAdj;
     }
+
+    // Satış'a Firebase Ayarını Uygula (Son Adım)
+    if (fbAdj && satisVal > 0) satisVal += (parseFloat(fbAdj.satis) || 0);
+    const satisStr = satisVal === 0 ? '-' : formatTurkishNumber(satisVal);
 
     // Yüzde Değişim ve Ok Hesabı
     const trendValue = parseFloat(useItem.Yuzde?.replace(',', '.') || '0');
