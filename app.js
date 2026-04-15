@@ -220,7 +220,7 @@ function renderTable(tableBody, codes, isEskiSection) {
     // Sarrafiye Alış/Satış Düzeltmeleri (Ağırlık sonrası uygulanıyor)
     if (code === 'C' || code === 'EC') {
       if (apiAlis > 0) apiAlis += 40;
-      if (apiSatis > 0) apiSatis -= 70;
+      if (apiSatis > 0) apiSatis -= 50; // Önceden -70 idi, 20 TL eklendi
     }
     if (code === 'Y' || code === 'EY') {
       if (apiAlis > 0) apiAlis += 250;
@@ -266,8 +266,9 @@ function renderTable(tableBody, codes, isEskiSection) {
     // Satış hesapla
     let satisStr;
     if (CONFIG.GRAM_CODES.includes(code)) {
-      // GRAM ALTIN: Ham fiyat, hiçbir ekleme/çıkarma yok
-      satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis);
+      // GRAM ALTIN: Gram başına 10 TL ekle
+      const finalPrice = apiSatis > 0 ? (apiSatis + (10 * weight)) : 0;
+      satisStr = finalPrice === 0 ? '-' : formatTurkishNumber(finalPrice);
     } else if (isSarrafiye) {
       satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis);
     } else if (code === 'B') {
