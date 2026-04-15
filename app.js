@@ -15,47 +15,11 @@ const firebaseConfig = {
   measurementId: "G-N90R7RKCFP"
 };
 
-// Initialize Firebase
-if (typeof firebase !== 'undefined') {
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  
-  // Canlı Ayarları Dinle
-  db.ref('config').on('value', snapshot => {
-    const data = snapshot.val();
-    if (data) {
-      if (data.satisMarkup !== undefined) CONFIG.SATIS_MARKUP = data.satisMarkup;
-      if (data.satisAdjustment) {
-        // Mevcut düzeltmeleri koru ama yenileriyle güncelle/ekle
-        Object.assign(CONFIG.SATIS_ADJUSTMENT, data.satisAdjustment);
-      }
-      
-      // Bakım Modu Kontrolü
-      const maintenanceOverlay = document.getElementById('maintenance-overlay');
-      if (maintenanceOverlay) {
-        if (data.maintenanceMode) {
-          maintenanceOverlay.classList.remove('hidden');
-          document.body.classList.add('maintenance-active');
-        } else {
-          maintenanceOverlay.classList.add('hidden');
-          document.body.classList.remove('maintenance-active');
-        }
-      }
-
-      // Fiyatları yeniden hesapla ve tabloları güncelle
-      if (goldData.length > 0) {
-        renderAllTables();
-      }
-    }
-  });
-}
-
 
 // ---- Ayarlar (Kolayca Değiştirilebilir) ----
 const CONFIG = {
   // Satış fiyatlarına eklenen kâr marjı (TL) - Admin panelinden değiştirilebilir
   SATIS_MARKUP: 20,
-
 
   // Otomatik güncelleme aralığı (ms)
   REFRESH_INTERVAL: 10000,
@@ -76,16 +40,12 @@ const CONFIG = {
   ESKI_CODES: ['EC', 'EY', 'ET', 'EG'],
 
   // Özel alış düzeltmeleri (+ veya - TL)
-  ALIS_ADJUSTMENT: {  },
-
-  // Özel alış düzeltmeleri (+ veya - TL)
-  ALIS_ADJUSTMENT: {  },
+  ALIS_ADJUSTMENT: {},
 
   // Özel satış düzeltmeleri (markup üzerine ek, + veya - TL)
-  // GA: API fiyatı + 20 (markup) + (-40) = API fiyatı - 20
-  SATIS_ADJUSTMENT: { 
-    'CH_T': -20, 'A_T': -40, 
-    'HH_T': -20, 'XAUUSD': -20, 'AG_T': -19, 'XAGUSD': -20 
+  SATIS_ADJUSTMENT: {
+    'CH_T': -20, 'A_T': -40,
+    'HH_T': -20, 'XAUUSD': -20, 'AG_T': -19, 'XAGUSD': -20
   },
 
   // Eski kodlar (ESKİ etiketi gösterilir, soluk renk)
@@ -116,6 +76,40 @@ const CONFIG = {
     'G100': '24 Ayar 100 Gram'
   }
 };
+
+// Initialize Firebase (CONFIG tanımlandıktan sonra başlatılıyor)
+if (typeof firebase !== 'undefined') {
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Canlı Ayarları Dinle
+  db.ref('config').on('value', snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      if (data.satisMarkup !== undefined) CONFIG.SATIS_MARKUP = data.satisMarkup;
+      if (data.satisAdjustment) {
+        Object.assign(CONFIG.SATIS_ADJUSTMENT, data.satisAdjustment);
+      }
+
+      // Bakım Modu Kontrolü
+      const maintenanceOverlay = document.getElementById('maintenance-overlay');
+      if (maintenanceOverlay) {
+        if (data.maintenanceMode) {
+          maintenanceOverlay.classList.remove('hidden');
+          document.body.classList.add('maintenance-active');
+        } else {
+          maintenanceOverlay.classList.add('hidden');
+          document.body.classList.remove('maintenance-active');
+        }
+      }
+
+      // Fiyatları yeniden hesapla ve tabloları güncelle
+      if (goldData.length > 0) {
+        renderAllTables();
+      }
+    }
+  });
+}
 
 
 // ---- Yardımcı Fonksiyonlar ----
@@ -263,8 +257,8 @@ function renderTable(tableBody, codes, isEskiSection) {
     let baseAlis = item ? parseTurkishNumber(item.Alis) : 0;
     let baseSatis = item ? parseTurkishNumber(item.Satis) : 0;
     
-    apiAlis = baseAlis > 0 ? (baseAlis * weight) : 0;
-    apiSatis = baseSatis > 0 ? (baseSatis * weight) : 0;
+    let apiAlis = baseAlis > 0 ? (baseAlis * weight) : 0;
+    let apiSatis = baseSatis > 0 ? (baseSatis * weight) : 0;
 
     // Sarrafiye Alış/Satış Düzeltmeleri (Ağırlık sonrası uygulanıyor)
     if (code === 'C' || code === 'EC') {
@@ -327,7 +321,7 @@ function renderTable(tableBody, codes, isEskiSection) {
       const hasSatis = parseTurkishNumber(dataMap['HH_T']?.Satis || '0');
       satisStr = hasSatis === 0 ? '-' : formatTurkishNumber(hasSatis * 0.650);
     } else if (code === '18') {
-      // 18 Ayar Satış: Altınkaynaktan çekilenin aynısı (raw apiSatis)
+      // 18 Ayar Satış: API'den çekilenin aynısı (raw apiSatis)
       satisStr = apiSatis === 0 ? '-' : formatTurkishNumber(apiSatis);
     } else {
       const satisAdj = (CONFIG.SATIS_ADJUSTMENT && CONFIG.SATIS_ADJUSTMENT[code]) || 0;
