@@ -151,14 +151,7 @@ async function fetchGoldPrices() {
     renderAllTables();
     updateLastUpdateTime();
 
-    // Son fiyatları sakla (değişim tespiti için)
-    goldData.forEach(item => {
-      previousPrices[item.Kod] = {
-        alis: item.Alis,
-        satis: item.Satis
-      };
-    });
-
+    // renderAllTables içinde previousPrices doldurulacak
   } catch (error) {
     console.error('Fiyat çekme hatası:', error);
     showError('Fiyatlar güncellenirken hata oluştu. Yeniden denenecek...');
@@ -297,23 +290,33 @@ function renderTable(tableBody, codes, isEskiSection) {
     let trendClass = 'trend-equal';
     let arrowSVG = '';
 
-    // Trend Belirleme (API veya Fiyat Değişimi)
-    let finalTrend = trendValue;
+    // Trend Belirleme (Önceki hesaplanmış fiyatla karşılaştır)
+    let finalTrend = 0; // 0: Eşit, 1: Yukarı, -1: Aşağı
     const prev = previousPrices[code];
     let changeClass = '';
 
+    const currentAlis = parseTurkishNumber(alisStr);
+    const currentSatis = parseTurkishNumber(satisStr);
+
     if (prev) {
-      const prevSatis = parseTurkishNumber(prev.satis || '0');
-      const currentSatis = parseTurkishNumber(satisStr); // Hesaplanan nihai fiyat
-      
-      if (currentSatis > prevSatis) {
+      if (currentSatis > prev.satis) {
         finalTrend = 1;
         changeClass = 'price-flash-up';
-      } else if (currentSatis < prevSatis) {
+      } else if (currentSatis < prev.satis) {
         finalTrend = -1;
         changeClass = 'price-flash-down';
+      } else {
+        // Fiyat aynıysa API'den gelen genel trendi koruyalım mı? 
+        // Kullanıcı anlık değişim istiyor, o yüzden 0 bırakıyoruz veya API trendine bakıyoruz.
+        finalTrend = trendValue > 0 ? 1 : (trendValue < 0 ? -1 : 0);
       }
+    } else {
+      // İlk yüklemede API trendini kullan
+      finalTrend = trendValue > 0 ? 1 : (trendValue < 0 ? -1 : 0);
     }
+
+    // Bir sonraki karşılaştırma için sakla
+    previousPrices[code] = { alis: currentAlis, satis: currentSatis };
 
     if (finalTrend > 0) {
       trendClass = 'trend-up';
@@ -323,7 +326,7 @@ function renderTable(tableBody, codes, isEskiSection) {
       arrowSVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
     } else {
       trendClass = 'trend-equal';
-      arrowSVG = ''; // Henüz değişim yoksa boş kalsın
+      arrowSVG = ''; 
     }
     trendHTML = `<div class="trend-indicator ${trendClass}">${arrowSVG}</div>`;
 

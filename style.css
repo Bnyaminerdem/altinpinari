@@ -294,14 +294,10 @@ body::before {
   border-bottom: 2px solid var(--border-color-strong);
 }
 
-.tv-table thead th:nth-child(1) { width: 33%; }
+.tv-table thead th:nth-child(1) { width: 40%; }
 .tv-table thead th:nth-child(2),
 .tv-table thead th:nth-child(3) {
-  width: 25%;
-  text-align: right;
-}
-.tv-table thead th:nth-child(4) {
-  width: 17%;
+  width: 30%;
   text-align: right;
 }
 
@@ -1094,7 +1090,7 @@ body.dark-mode .header-control-btn {
   font-family: var(--font-body);
   font-weight: 700;
   color: #0d7a52;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   display: flex;
@@ -1104,9 +1100,9 @@ body.dark-mode .header-control-btn {
 
 .iban-holder-inline {
   color: #555;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: none;
-  font-size: 0.85rem;
+  font-size: 1.1rem;
   letter-spacing: 0;
 }
 
@@ -1318,6 +1314,18 @@ body.dark-mode .header-control-btn {
   body.tv-mode-large .iban-number { font-size: 2.2rem !important; }
   body.tv-mode-medium .iban-number { font-size: 2.0rem !important; }
   body.tv-mode-compact .iban-number { font-size: 1.85rem !important; }
+
+  body.tv-mode-large .iban-bank { font-size: 1.5rem !important; }
+  body.tv-mode-medium .iban-bank { font-size: 1.35rem !important; }
+  body.tv-mode-compact .iban-bank { font-size: 1.25rem !important; }
+
+  body.tv-mode-large .iban-holder-inline,
+  body.tv-mode-medium .iban-holder-inline,
+  body.tv-mode-compact .iban-holder-inline { 
+    font-size: 1.2rem !important; 
+    font-weight: 600 !important;
+    opacity: 0.9 !important;
+  }
   
   body.tv-mode-large .iban-copy-btn,
   body.tv-mode-medium .iban-copy-btn,
@@ -1466,10 +1474,51 @@ body.dark-mode .mobile-tab { background: #1f2124; color: #888; border-color: #33
   }
 
   /* Tablo sütun oranlarını mobilde ayarla (4 kolonlu yapı) */
-  .tv-table thead th:nth-child(1) { width: 30%; }
-  .tv-table thead th:nth-child(2) { width: 28%; }
+  .tv-table thead th:nth-child(1) { width: 36%; }
+  .tv-table thead th:nth-child(2) { width: 32%; }
   .tv-table thead th:nth-child(3) { width: 32%; }
-  .tv-table thead th:nth-child(4) { width: 10%; }
+
+  /* Mobilde IBAN kartını dikey yap ve ortala */
+  .iban-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 20px 0 !important;
+    padding: 30px 15px !important;
+    box-sizing: border-box !important;
+  }
+
+  .iban-qr-section {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .iban-qr-img {
+    width: 160px !important;
+    height: 160px !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+
+  .iban-info-section {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 15px !important;
+  }
+
+  .iban-bank {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
 
   /* Mobil tab bar yazılarını biraz küçült (sığması için) */
   .mobile-tab {
