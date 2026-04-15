@@ -1,6 +1,6 @@
 /* ============================================
    ALTIN PINARI KUYUMCULUK - APP.JS
-   Altınkaynak API'den fiyat çekme + kâr marjı
+   Altın Pınarı API'den fiyat çekme + kâr marjı
    ============================================ */
 
 // --- FIREBASE CONFIG (Yönetim panelindeki ile aynı olmalı) ---
@@ -33,8 +33,13 @@ if (typeof firebase !== 'undefined') {
       // Bakım Modu Kontrolü
       const maintenanceOverlay = document.getElementById('maintenance-overlay');
       if (maintenanceOverlay) {
-        if (data.maintenanceMode) maintenanceOverlay.classList.remove('hidden');
-        else maintenanceOverlay.classList.add('hidden');
+        if (data.maintenanceMode) {
+          maintenanceOverlay.classList.remove('hidden');
+          document.body.classList.add('maintenance-active');
+        } else {
+          maintenanceOverlay.classList.add('hidden');
+          document.body.classList.remove('maintenance-active');
+        }
       }
 
       // Fiyatları yeniden hesapla ve tabloları güncelle

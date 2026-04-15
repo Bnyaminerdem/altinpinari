@@ -1109,14 +1109,25 @@ body.dark-mode .disclaimer-ticker-bar {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100svh;
   background: #0f1115;
   display: flex !important;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 999999; /* En üstte (Hamburger menüden de üstte) */
   text-align: center;
   padding: 2rem;
+}
+
+/* Bakım modu aktifken ana içeriği tamamen gizle */
+body.maintenance-active main,
+body.maintenance-active header,
+body.maintenance-active footer,
+body.maintenance-active .mobile-tab-bar,
+body.maintenance-active .disclaimer-ticker-bar,
+body.maintenance-active .hamburger-menu {
+  display: none !important;
 }
 
 .maintenance-overlay.hidden {
