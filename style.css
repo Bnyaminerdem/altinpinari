@@ -618,6 +618,57 @@ body.dark-mode .header-control-btn {
   align-self: flex-end;
 }
 
+/* ---- Disclaimer Ticker Bar (Kayan Yasal Uyarı) ---- */
+.disclaimer-ticker-bar {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color-strong);
+  border-bottom: 1px solid var(--border-color-strong);
+  padding: 8px 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+  background-color: var(--bg-card);
+}
+
+.disclaimer-ticker-content {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  gap: 50px;
+  animation: disclaimer-scroll 45s linear infinite;
+  width: max-content;
+}
+
+.disclaimer-ticker-content span {
+  font-size: 0.75rem;
+  color: var(--gold-dark);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.ticker-separator {
+  color: var(--gold-light);
+  font-weight: 700;
+  opacity: 0.5;
+}
+
+@keyframes disclaimer-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% - 25px)); }
+}
+
+/* Dark Mode Ticker */
+body.dark-mode .disclaimer-ticker-bar {
+  background-color: #141517;
+}
+
+/* Mobilde biraz daha yavaş akabilir */
+@media (max-width: 768px) {
+  .disclaimer-ticker-content {
+    animation-duration: 35s;
+  }
+}
+
 .iban-holder-inline {
   font-size: 0.72rem;
   color: var(--text-secondary);
