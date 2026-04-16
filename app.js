@@ -122,11 +122,16 @@ if (typeof firebase !== 'undefined') {
 
       // Fiyatları yeniden hesapla ve tabloları güncelle
       if (goldData.length > 0) {
-        renderAllTables();
+        // İlk yüklemede yanıp sönmeyi engellemek için true gönderiyoruz
+        renderAllTables(typeof firstFirebaseLoad !== 'undefined' && firstFirebaseLoad);
+        if (typeof firstFirebaseLoad !== 'undefined') firstFirebaseLoad = false;
       }
     }
   });
 }
+
+// İlk yükleme takibi için flag
+let firstFirebaseLoad = true;
 
 
 // ---- Yardımcı Fonksiyonlar ----
@@ -219,7 +224,7 @@ async function fetchGoldPrices() {
 }
 
 // ---- Tablo Render ----
-function renderTable(tableBody, codes, isEskiSection) {
+function renderTable(tableBody, codes, isEskiSection, skipFlash) {
   if (!tableBody) return 0;
 
   const dataMap = {};
@@ -363,29 +368,23 @@ function renderTable(tableBody, codes, isEskiSection) {
     let trendClass = 'trend-equal';
     let arrowSVG = '';
 
-    // Trend Belirleme (Önceki hesaplanmış fiyatla karşılaştır)
-    let finalTrend = 0; // 0: Eşit, 1: Yukarı, -1: Aşağı
+    // Oklarda her zaman API'den gelen piyasa trendini (Yuzde) baz alalım.
+    // Bu sayede manuel düzeltmeler okları (yukarı/aşağı) saptırmaz, sadece piyasa hareketini gösterir.
+    let finalTrend = trendValue > 0 ? 1 : (trendValue < 0 ? -1 : 0);
+
     const prev = previousPrices[code];
     let changeClass = '';
 
     const currentAlis = parseTurkishNumber(alisStr);
     const currentSatis = parseTurkishNumber(satisStr);
 
-    if (prev) {
+    // Yanıp sönme efekti (flash) sadece fiyat değiştiğinde ve skipFlash kapalıyken tetiklensin
+    if (prev && !skipFlash) {
       if (currentSatis > prev.satis) {
-        finalTrend = 1;
         changeClass = 'price-flash-up';
       } else if (currentSatis < prev.satis) {
-        finalTrend = -1;
         changeClass = 'price-flash-down';
-      } else {
-        // Fiyat aynıysa API'den gelen genel trendi koruyalım mı? 
-        // Kullanıcı anlık değişim istiyor, o yüzden 0 bırakıyoruz veya API trendine bakıyoruz.
-        finalTrend = trendValue > 0 ? 1 : (trendValue < 0 ? -1 : 0);
       }
-    } else {
-      // İlk yüklemede API trendini kullan
-      finalTrend = trendValue > 0 ? 1 : (trendValue < 0 ? -1 : 0);
     }
 
     // Bir sonraki karşılaştırma için sakla
@@ -438,10 +437,10 @@ function renderTable(tableBody, codes, isEskiSection) {
 }
 
 
-function renderAllTables() {
-  const zCount = renderTable(elements.ziynetTableBody, CONFIG.ZIYNET_CODES, false);
-  const gCount = renderTable(elements.gramTableBody, CONFIG.GRAM_CODES, false);
-  const aCount = renderTable(elements.altinTableBody, CONFIG.ALTIN_CODES, false);
+function renderAllTables(skipFlash = false) {
+  const zCount = renderTable(elements.ziynetTableBody, CONFIG.ZIYNET_CODES, false, skipFlash);
+  const gCount = renderTable(elements.gramTableBody, CONFIG.GRAM_CODES, false, skipFlash);
+  const aCount = renderTable(elements.altinTableBody, CONFIG.ALTIN_CODES, false, skipFlash);
 
   if (elements.ziynetBadge) elements.ziynetBadge.textContent = `${zCount} ürün`;
   if (elements.gramBadge) elements.gramBadge.textContent = `${gCount} ürün`;
