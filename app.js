@@ -3,6 +3,10 @@
    Altın Pınarı API'den fiyat çekme + kâr marjı
    ============================================ */
 
+const appStartTime = Date.now();
+let firstFirebaseLoad = true;
+let firstApiLoad = true;
+
 // --- FIREBASE CONFIG (Yönetim panelindeki ile aynı olmalı) ---
 const firebaseConfig = {
   apiKey: "AIzaSyBlNarV8jgQ2RK1QDxn0mj4XxhTyk2Zf_8",
@@ -130,8 +134,8 @@ if (typeof firebase !== 'undefined') {
   });
 }
 
-// İlk yükleme takibi için flag
-let firstFirebaseLoad = true;
+// (Daha önce yukarı taşındı)
+// let firstFirebaseLoad = true;
 
 
 // ---- Yardımcı Fonksiyonlar ----
@@ -213,7 +217,8 @@ async function fetchGoldPrices() {
     lastUpdateTime = new Date();
 
     hideError();
-    renderAllTables();
+    renderAllTables(firstApiLoad);
+    firstApiLoad = false;
     updateLastUpdateTime();
 
     // renderAllTables içinde previousPrices doldurulacak
@@ -378,8 +383,13 @@ function renderTable(tableBody, codes, isEskiSection, skipFlash) {
     const currentAlis = parseTurkishNumber(alisStr);
     const currentSatis = parseTurkishNumber(satisStr);
 
-    // Yanıp sönme efekti (flash) sadece fiyat değiştiğinde ve skipFlash kapalıyken tetiklensin
-    if (prev && !skipFlash) {
+    // Yanıp sönme efekti (flash) sadece fiyat değiştiğinde ve aşağıdaki şartlarda tetiklensin:
+    // 1. skipFlash gelmemiş olmalı
+    // 2. Sayfa açılalı en az 2 saniye geçmiş olmalı (Mobil yavaş yükleme için koruma)
+    // 3. Fiyat gerçekten değişmiş olmalı
+    const isGracePeriod = (Date.now() - appStartTime < 2000);
+    
+    if (prev && !skipFlash && !isGracePeriod) {
       if (currentSatis > prev.satis) {
         changeClass = 'price-flash-up';
       } else if (currentSatis < prev.satis) {
