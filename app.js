@@ -509,30 +509,6 @@ function hideLoading() {
   }
 }
 
-// ---- IBAN Kopyala ----
-function copyIban() {
-  const iban = 'TR89002050000993950840001';
-  navigator.clipboard.writeText(iban).then(() => {
-    const btn = document.getElementById('iban-copy-btn');
-    const text = document.getElementById('iban-copy-text');
-    if (btn && text) {
-      btn.classList.add('copied');
-      text.textContent = 'Kopyalandı ✓';
-      setTimeout(() => {
-        btn.classList.remove('copied');
-        text.textContent = 'Kopyala';
-      }, 2000);
-    }
-  }).catch(() => {
-    // Fallback eski tarayıcılar için
-    const el = document.createElement('textarea');
-    el.value = iban;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-  });
-}
 
 
 // ---- Mobil Sekmeler ----
