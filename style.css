@@ -294,10 +294,10 @@ body::before {
   border-bottom: 2px solid var(--border-color-strong);
 }
 
-.tv-table thead th:nth-child(1) { width: 40%; }
+.tv-table thead th:nth-child(1) { width: 44%; }
 .tv-table thead th:nth-child(2),
 .tv-table thead th:nth-child(3) {
-  width: 30%;
+  width: 28%;
   text-align: right;
 }
 
@@ -671,6 +671,47 @@ body.dark-mode .disclaimer-ticker-bar {
 
 
 
+/* ---- Branding for TV Mode ---- */
+.tv-brand-only {
+  display: none;
+  align-items: center;
+  gap: 15px;
+}
+
+.tv-brand-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-top: 2px;
+}
+
+/* ---- Gram Section DateTime (TV Mode) ---- */
+.tv-gram-datetime {
+  display: none; /* varsayılan gizli, sadece medium modda gösterilir */
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.tv-gram-clock {
+  font-family: var(--font-body);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+
+.tv-gram-date {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
 /* ---- Product Icon (no emoji, text-based) ---- */
 .product-icon {
   display: none;
@@ -679,6 +720,7 @@ body.dark-mode .disclaimer-ticker-bar {
 .product-name {
   line-height: 1.3;
   font-weight: 600;
+  white-space: nowrap; /* Kelimelerin alta kaymasını engelle */
 }
 
 .product-code {
@@ -1293,6 +1335,66 @@ body.maintenance-active .hamburger-menu {
   .tv-grid { gap: 24px; }
   body.tv-mode-compact .tv-grid { gap: 50px; }
   body.tv-mode-medium .tv-grid { gap: 35px; }
+
+  /* Orta Modda Sarrafiye Başlığını Logo ile Değiştir */
+  body.tv-mode-medium #tab-sarrafiye .tv-section-title {
+    display: none !important;
+  }
+
+  body.tv-mode-medium #tab-sarrafiye .tv-brand-only {
+    display: flex !important;
+    margin-bottom: 5px;
+  }
+
+  body.tv-mode-medium #tab-sarrafiye .tv-brand-only .header-logo {
+    width: 58px;
+    height: 58px;
+    border: 3px solid var(--gold);
+  }
+
+  body.tv-mode-medium #tab-sarrafiye .tv-brand-only .header-title {
+    font-family: var(--font-display);
+    font-size: 3rem; /* Daha da büyütüldü */
+    font-weight: 700;
+    color: var(--gold-dark);
+    line-height: 1;
+  }
+
+  body.tv-mode-medium #tab-sarrafiye .tv-brand-only .tv-brand-subtitle {
+    font-size: 1.1rem;
+    letter-spacing: 5px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  /* Medium Modda Ürün Sayısı Rozetlerini Gizle */
+  body.tv-mode-medium .tv-section-badge {
+    display: none !important;
+  }
+
+  /* Medium Modda Gram Altın başlığı yerine Saat/Tarih göster ve Sola Yasla */
+  body.tv-mode-medium #tab-gram .tv-section-title {
+    display: none !important;
+  }
+
+  body.tv-mode-medium .tv-gram-datetime {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-end; /* Sağ tarafa yasla */
+    margin-left: auto;     /* En sağa it */
+  }
+
+  body.tv-mode-medium .tv-gram-clock {
+    font-size: 2rem;
+    line-height: 1;
+    text-align: right;
+  }
+
+  body.tv-mode-medium .tv-gram-date {
+    font-size: 0.8rem;
+    margin-top: 4px;
+    text-align: right;
+  }
 
   /* Fiyat Boyutları */
   body.tv-mode-compact .tv-table tbody td { font-size: 1.6rem; padding: 15px 25px; }

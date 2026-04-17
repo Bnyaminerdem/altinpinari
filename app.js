@@ -206,6 +206,8 @@ function updateClock() {
 
   if (elements.clockEl) elements.clockEl.textContent = timeStr;
   if (elements.dateEl) elements.dateEl.textContent = dateStr;
+  if (elements.tvGramClock) elements.tvGramClock.textContent = timeStr;
+  if (elements.tvGramDate) elements.tvGramDate.textContent = dateStr;
 }
 
 // ---- API ----
@@ -254,6 +256,17 @@ function renderTable(tableBody, codes, isEskiSection, skipFlash) {
         </tr>
       `;
       hasShownEskiSeparator = true;
+    }
+
+    // GRAM ALTIN Grubu için Ayırıcı (G1 ile başlıyorsa)
+    if (code === 'G1') {
+      html += `
+        <tr class="table-separator">
+          <td colspan="3">
+            <span class="separator-label">Gram Altın</span>
+          </td>
+        </tr>
+      `;
     }
 
     // 1. Veri Kaynağı Yönlendirme (MAPPING)
@@ -448,8 +461,16 @@ function renderTable(tableBody, codes, isEskiSection, skipFlash) {
 
 
 function renderAllTables(skipFlash = false) {
+  const isMediumMode = document.body.classList.contains('tv-mode-medium');
+  
+  // Orta Boyut (Medium) modu için özel Gram Altın listesi (ONS, Has, Bilezik, 18k, 14k eklenmiş hali)
+  let gramCodes = CONFIG.GRAM_CODES;
+  if (isMediumMode) {
+    gramCodes = ['XAUUSD', 'HH_T', 'B', '18', '14', ...CONFIG.GRAM_CODES];
+  }
+
   const zCount = renderTable(elements.ziynetTableBody, CONFIG.ZIYNET_CODES, false, skipFlash);
-  const gCount = renderTable(elements.gramTableBody, CONFIG.GRAM_CODES, false, skipFlash);
+  const gCount = renderTable(elements.gramTableBody, gramCodes, false, skipFlash);
   const aCount = renderTable(elements.altinTableBody, CONFIG.ALTIN_CODES, false, skipFlash);
 
   if (elements.ziynetBadge) elements.ziynetBadge.textContent = `${zCount} ürün`;
@@ -645,6 +666,9 @@ function setupDisplayControls() {
 
       localStorage.setItem('tvScaleMode', nextMode);
       applyTvScaleClass(nextMode);
+
+      // Mod değiştiğinde tabloları hemen yeniden çiz (Özel listeler için)
+      renderAllTables(true);
     });
   }
 }
@@ -671,7 +695,9 @@ async function init() {
     errorMessage: document.getElementById('error-message'),
     ziynetBadge: document.getElementById('ziynet-badge'),
     gramBadge: document.getElementById('gram-badge'),
-    altinBadge: document.getElementById('altin-badge')
+    altinBadge: document.getElementById('altin-badge'),
+    tvGramClock: document.getElementById('tv-gram-clock'),
+    tvGramDate: document.getElementById('tv-gram-date')
   };
 
   // Saat başlat
