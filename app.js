@@ -132,6 +132,28 @@ if (typeof firebase !== 'undefined') {
       }
     }
   });
+
+  // --- Real-time Presence Tracking ---
+  const presenceRef = db.ref('presence');
+  const userPresenceRef = presenceRef.push(); // Create a unique entry for this session
+
+  // Monitor connection state
+  db.ref('.info/connected').on('value', (snapshot) => {
+    if (snapshot.val() === true) {
+      // We are connected (or reconnected)
+      // When we disconnect, remove this entry
+      userPresenceRef.onDisconnect().remove();
+      
+      // Set the presence entry
+      userPresenceRef.set({
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        lastActive: firebase.database.ServerValue.TIMESTAMP
+      });
+    }
+  });
+
+  // Optional: Update lastActive periodically if needed, 
+  // but for simple "online now" count, the above is enough.
 }
 
 // (Daha önce yukarı taşındı)
