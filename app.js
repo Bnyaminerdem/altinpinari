@@ -291,7 +291,13 @@ function renderTable(tableBody, codes, isEskiSection, skipFlash) {
 
     const item = dataMap[sourceCode] || dataMap['GAT'] || dataMap['GA_T'] || dataMap['GA'] || dataMap['HH_T'];
     
-    const displayName = CONFIG.DISPLAY_NAMES[code] || (item ? item.Aciklama : code);
+    let displayName = CONFIG.DISPLAY_NAMES[code] || (item ? item.Aciklama : code);
+    
+    // Orta Boyutta "Gram Altın" yerine "24 Ayar 1 Gram" yaz (Üretici isteği)
+    if (isMediumMode && (code === 'G1' || code === 'GA')) {
+      displayName = '24 Ayar 1 Gram';
+    }
+
     const isEski = CONFIG.ESKI_SET.has(code);
     const isSarrafiye = CONFIG.ZIYNET_CODES.includes(code) || CONFIG.ESKI_CODES.includes(code);
 
