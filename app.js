@@ -133,27 +133,39 @@ if (typeof firebase !== 'undefined') {
     }
   });
 
-  // --- Real-time Presence Tracking ---
-  const presenceRef = db.ref('presence');
-  const userPresenceRef = presenceRef.push(); // Create a unique entry for this session
+  // --- Real-time Presence Tracking with Geolocation ---
+  async function trackPresence() {
+    const presenceRef = db.ref('presence');
+    const userPresenceRef = presenceRef.push();
+    let locationData = { city: 'Bilinmiyor', country: 'Bilinmiyor' };
 
-  // Monitor connection state
-  db.ref('.info/connected').on('value', (snapshot) => {
-    if (snapshot.val() === true) {
-      // We are connected (or reconnected)
-      // When we disconnect, remove this entry
-      userPresenceRef.onDisconnect().remove();
-      
-      // Set the presence entry
-      userPresenceRef.set({
-        timestamp: firebase.database.ServerValue.TIMESTAMP,
-        lastActive: firebase.database.ServerValue.TIMESTAMP
-      });
+    try {
+      // Fetch location data from ipapi (Free tier)
+      const geoResponse = await fetch('https://ipapi.co/json/');
+      if (geoResponse.ok) {
+        const geoData = await geoResponse.json();
+        locationData = {
+          city: geoData.city || 'Bilinmiyor',
+          country: geoData.country_name || 'Bilinmiyor',
+          ip: geoData.ip // Optional: for debugging
+        };
+      }
+    } catch (e) {
+      console.log("Konum bilgisi alınamadı, anonim devam ediliyor.");
     }
-  });
 
-  // Optional: Update lastActive periodically if needed, 
-  // but for simple "online now" count, the above is enough.
+    db.ref('.info/connected').on('value', (snapshot) => {
+      if (snapshot.val() === true) {
+        userPresenceRef.onDisconnect().remove();
+        userPresenceRef.set({
+          ...locationData,
+          timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+      }
+    });
+  }
+
+  trackPresence();
 }
 
 // (Daha önce yukarı taşındı)
