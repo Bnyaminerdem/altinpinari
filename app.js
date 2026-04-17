@@ -245,7 +245,6 @@ function renderTable(tableBody, codes, isEskiSection, skipFlash) {
   let hasShownEskiSeparator = false;
 
   // PC/TV ekranında 50g ve 100g'ı göstermiyoruz (alan tasarrufu)
-  const isDesktop = window.innerWidth >= 769;
   const filteredCodes = isDesktop ? codes.filter(c => c !== 'G50' && c !== 'G100') : codes;
 
   filteredCodes.forEach(code => {
