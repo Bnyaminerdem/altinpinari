@@ -233,6 +233,9 @@ async function fetchGoldPrices() {
 // ---- Tablo Render ----
 function renderTable(tableBody, codes, isEskiSection, skipFlash) {
   if (!tableBody) return 0;
+  
+  const isDesktop = window.innerWidth >= 769;
+  const isMediumMode = isDesktop && document.body.classList.contains('tv-mode-medium');
 
   const dataMap = {};
   goldData.forEach(item => { dataMap[item.Kod] = item; });
@@ -258,8 +261,8 @@ function renderTable(tableBody, codes, isEskiSection, skipFlash) {
       hasShownEskiSeparator = true;
     }
 
-    // GRAM ALTIN Grubu için Ayırıcı (G1 ile başlıyorsa)
-    if (code === 'G1') {
+    // GRAM ALTIN Grubu için Ayırıcı (Sadece Orta TV modunda ve G1 ile başlıyorsa)
+    if (isMediumMode && code === 'G1') {
       html += `
         <tr class="table-separator">
           <td colspan="3">
@@ -461,9 +464,11 @@ function renderTable(tableBody, codes, isEskiSection, skipFlash) {
 
 
 function renderAllTables(skipFlash = false) {
-  const isMediumMode = document.body.classList.contains('tv-mode-medium');
+  const isDesktop = window.innerWidth >= 769;
+  const isMediumMode = isDesktop && document.body.classList.contains('tv-mode-medium');
   
   // Orta Boyut (Medium) modu için özel Gram Altın listesi (ONS, Has, Bilezik, 18k, 14k eklenmiş hali)
+  // Sadece PC/TV ekranında (Desktop) iken bu özel listeyi kullan
   let gramCodes = CONFIG.GRAM_CODES;
   if (isMediumMode) {
     gramCodes = ['XAUUSD', 'HH_T', 'B', '18', '14', ...CONFIG.GRAM_CODES];

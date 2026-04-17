@@ -1458,6 +1458,14 @@ body.dark-mode .mobile-tab { background: #1f2124; color: #888; border-color: #33
 
   .tv-section-title {
     font-size: 1.1rem;
+    display: block !important; /* Mobilde her zaman göster */
+  }
+
+  /* TV Modu öğelerini mobilde KESİN olarak gizle */
+  .tv-brand-only,
+  .tv-gram-datetime,
+  .tv-brand-subtitle {
+    display: none !important;
   }
 
   .header {
